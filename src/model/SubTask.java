@@ -1,5 +1,8 @@
 package model;
 
+/* Каждая сабтаска имеет сссылку только на один эпик. */
+
+
 public class SubTask extends Task {
         private Integer parentId;
 

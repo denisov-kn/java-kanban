@@ -1,12 +1,10 @@
-package service;
-
 import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
+import service.TaskManager;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -27,14 +25,14 @@ public class Main {
         Epic epic2 = new Epic("Эпик 2", "Описание 6");
         SubTask subTask3 = new SubTask("Сабтаск3", "Описание 7", Status.NEW);
 
-        taskManager.addTask(task);
-        taskManager.addTask(task2);
-        taskManager.addEpic(epic1);
-        taskManager.addEpic(epic2);
+        taskManager.create(task);
+        taskManager.create(task2);
+        taskManager.create(epic1);
+        taskManager.create(epic2);
 
-        taskManager.addSubTask(subTask1, epic1.getId());
-        taskManager.addSubTask(subTask2, epic1.getId());
-        taskManager.addSubTask(subTask3, epic2.getId());
+        taskManager.create(subTask1, epic1.getId());
+        taskManager.create(subTask2, epic1.getId());
+        taskManager.create(subTask3, epic2.getId());
 
         print(taskManager.getTaskList());
         print(taskManager.getSubTask());
@@ -59,17 +57,12 @@ public class Main {
         print(taskManager.getEpicList());
         System.out.println("Проверяем удаление задач: эпик, сабтаски");
 
-
-
         taskManager.removeEpic(epic1.getId());
         taskManager.removeSubTask(subTask6.getId());
 
         print(taskManager.getTaskList());
         print(taskManager.getSubTask());
         print(taskManager.getEpicList());
-
-
-
 
     }
      // Печать задач

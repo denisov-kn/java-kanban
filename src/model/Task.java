@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public class Task {
 
-    private final String summary;
+    private String summary;
     private Status status;
-    private final String description;
+    private String description;
     private Integer id;
 
     public Task(String summary, String description, Status status) {
@@ -20,6 +20,14 @@ public class Task {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     public String getDescription() {
@@ -47,12 +55,6 @@ public class Task {
         this.status = status;
     }
 
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(description, summary);
-    }
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "{" +
@@ -63,16 +65,17 @@ public class Task {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (this.getClass() != obj.getClass()) return false;
-        Task otherTask = (Task) obj;
-        return Objects.equals(summary, otherTask.summary) &&
-                Objects.equals(description, otherTask.description) &&
-                Objects.equals(status, otherTask.status) &&
-                Objects.equals(id, otherTask.id);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task task)) return false;
+        return id == task.id;
+    }
 
+    @Override
+    public int hashCode() {
+        return id;
     }
 }
+
+
 

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/* Класс который занимается упралением задачами. Задачи складываеются по типу каждый с вою хешмап.
-В параметрах есть Id, сквозной для всех здач (всех типов) */
+/* Класс который, занимается управлением задачами. Задачи складываеются по типу  - каждый свою хешмапу.
+В параметрах есть Id  -  сквозной для всех задач (всех типов) */
 
 public class TaskManager  {
 
@@ -38,20 +38,23 @@ public class TaskManager  {
         return epicList;
     }
 
-    public void addTask(Task task) {
+    public Task create(Task task) {
 
         int currentId = generateId();
         task.setId(currentId);
         taskList.put(currentId, task);
+
+        return task;
     }
 
-    public void addEpic(Epic epic) {
+    public Epic create(Epic epic) {
         int currentId = generateId();
         epic.setId(currentId);
         epicList.put(currentId, epic);
+        return epic;
     }
 
-    public void addSubTask(SubTask subTask, Integer epicId) {
+    public SubTask create(SubTask subTask, Integer epicId) {
         int currentId = generateId();
         Epic epic = epicList.get(epicId);
         subTask.setId(currentId);
@@ -59,6 +62,8 @@ public class TaskManager  {
         epic.addSubTaskToEpic(subTask);
         epic.updateStatus();
         subTaskList.put(currentId, subTask);
+
+        return subTask;
     }
 
     public void updateTask(Integer taskId, Task task) {
@@ -113,13 +118,15 @@ public class TaskManager  {
 
     public void removeAllEpic(){
         removeAllSubTask();
-        taskList.clear();
+        epicList.clear();
     }
 
     public void removeAllSubTask(){
 
         for (Map.Entry<Integer, Epic> integerEpicEntry : epicList.entrySet()) {
-            integerEpicEntry.getValue().getSubTaskList().clear();
+            integerEpicEntry.getValue().getSubTaskList().clear();     // очищяем лист с подзадачами у эпиков
+            integerEpicEntry.getValue().updateStatus(); // обновляем статусы
+
         }
         subTaskList.clear();
     }
@@ -146,7 +153,7 @@ public class TaskManager  {
         return epicList.remove(epicId);
     }
 
-     // метод возвращяет лист со спском сссылок на сабтаски эпика
+     // метод возвращяет лист со списком сссылок на сабтаски эпика
     public ArrayList<SubTask> getSubTasksByEpic (Integer epicId) {
 
         return epicList.get(epicId).getSubTaskList();

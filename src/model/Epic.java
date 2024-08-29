@@ -1,5 +1,7 @@
 package model;
 
+/* Епик содержит в себя сссылки на сабтаски. Статус эпика вычисляется через совокупность статусов сабтасок */
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
@@ -12,22 +14,22 @@ public class Epic extends Task {
         subTaskList = new ArrayList<>();
 
     }
-
+    /* Подсчет статуса:
+     - если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW.
+     - если все подзадачи имеют статус DONE, то и эпик считается завершённым — со статусом DONE.
+     - во всех остальных случаях статус должен быть IN_PROGRESS.
+     */
     public void updateStatus() {
         if (subTaskList.isEmpty()) {
             this.setStatus(Status.NEW);
             return;
         }
         int newCount = 0;
-        int inProgressCount = 0;
         int doneCount = 0;
         for (SubTask subTask : subTaskList) {
             switch (subTask.getStatus()) {
                 case Status.NEW:
                     newCount++;
-                    break;
-                case Status.IN_PROGRESS:
-                    inProgressCount++;
                     break;
                 case Status.DONE:
                     doneCount++;
@@ -59,12 +61,12 @@ public class Epic extends Task {
         }
         subTaskList.remove(indexForRemove);
 
-
-
     }
 
     public void setSubTaskList(ArrayList<SubTask> subTaskList) {
         this.subTaskList = subTaskList;
     }
+
+
 }
 
