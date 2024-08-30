@@ -15,8 +15,4 @@ public class SubTask extends Task {
     public Integer getParentId() {
         return parentId;
     }
-
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
-    }
 }

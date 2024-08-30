@@ -4,7 +4,6 @@ import model.SubTask;
 import model.Task;
 import service.TaskManager;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Main {
 
@@ -12,7 +11,6 @@ public class Main {
         System.out.println("Поехали!");
 
         TaskManager taskManager = new TaskManager();
-        Scanner scanner = new Scanner(System.in);
 
         // Добавляем первоначальный набор задач
 
