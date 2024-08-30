@@ -3,9 +3,7 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import service.TaskManager;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {

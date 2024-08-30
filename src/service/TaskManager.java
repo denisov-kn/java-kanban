@@ -1,13 +1,9 @@
 package service;
-
 import model.Epic;
 import model.SubTask;
 import model.Task;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый свою хешмапу.
 В параметрах есть Id - сквозной для всех задач (всех типов) */
