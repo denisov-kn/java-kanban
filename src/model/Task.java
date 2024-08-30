@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Objects;
-
 /* Базовый класс для задач. Содержит в себе базовые поля.  Внутри есть также id, который передается извне. */
 
 public class Task {
@@ -49,9 +47,7 @@ public class Task {
     }
 
 
-    /* Метод нужен для измнения статуса, но доступен только внутри модели.
-    Для внешних классов изменеие статуса недоступно */
-    protected void setStatus(Status status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

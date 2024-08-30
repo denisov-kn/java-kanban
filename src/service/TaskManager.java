@@ -7,9 +7,10 @@ import model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-/* Класс который, занимается управлением задачами. Задачи складываеются по типу  - каждый свою хешмапу.
-В параметрах есть Id  -  сквозной для всех задач (всех типов) */
+/* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый свою хешмапу.
+В параметрах есть Id - сквозной для всех задач (всех типов) */
 
 public class TaskManager  {
 
@@ -26,16 +27,17 @@ public class TaskManager  {
 
     }
 
-    public HashMap<Integer, SubTask> getSubTask() {
-        return subTaskList;
+    public ArrayList <SubTask> getSubTask() {
+
+        return new ArrayList<>(subTaskList.values());
     }
 
-    public HashMap<Integer, Task> getTaskList() {
-        return taskList;
+    public ArrayList <Task> getTaskList() {
+        return new ArrayList<>(taskList.values());
     }
 
-    public HashMap<Integer, Epic> getEpicList() {
-        return epicList;
+    public ArrayList <Epic> getEpicList() {
+        return new ArrayList<>(epicList.values());
     }
 
     public Task create(Task task) {
@@ -51,14 +53,19 @@ public class TaskManager  {
         int currentId = generateId();
         epic.setId(currentId);
         epicList.put(currentId, epic);
+
         return epic;
     }
 
-    public SubTask create(SubTask subTask, Integer epicId) {
+    public SubTask create(SubTask subTask) {
+
+
         int currentId = generateId();
-        Epic epic = epicList.get(epicId);
+
+        Epic epic = epicList.get(subTask.getParentId());
+        if(epic == null) return null;
+
         subTask.setId(currentId);
-        subTask.setParentId(epicId);
         epic.addSubTaskToEpic(subTask);
         epic.updateStatus();
         subTaskList.put(currentId, subTask);
@@ -66,33 +73,38 @@ public class TaskManager  {
         return subTask;
     }
 
-    public void updateTask(Integer taskId, Task task) {
-        task.setId(taskId);
-        taskList.put(taskId,task);
+    public void updateTask(Task task) {
+        Task taskCheck = taskList.get(task.getId());
+        if (taskCheck == null) return;
+        taskList.put(task.getId(),task);
     }
 
-    public void updateEpic(Integer epicId, Epic epic) {
+    public void updateEpic(Epic epic) {
 
-        Epic previousEpic = epicList.get(epicId);
-        epic.setId(epicId);
-        epic.setSubTaskList(previousEpic.getSubTaskList()); // меняем ссылки на сабтаски внутри уже нового эпика
-        epicList.put(epicId,epic);
+        Epic currentEpic = epicList.get(epic.getId());
+        if (currentEpic == null) return;
+
+        currentEpic.setSummary(epic.getSummary());
+        currentEpic.setDescription(epic.getDescription());
+
     }
 
-    public void updateSubTask(Integer previousSubTaskId, SubTask newSubTask) {
+    public void updateSubTask(SubTask subTask) {
 
-        newSubTask.setId(previousSubTaskId); // меняем id у нового сабтаска id
+        SubTask currentSubTask = subTaskList.get(subTask.getId());
+        if (currentSubTask == null) return;
 
-        SubTask previousSubTask = subTaskList.get(previousSubTaskId); // достаем старый сабтаск по id
+        // проверяем что к нам пришел на обновление сабтаск, у которого верный parentId
+        Integer currentParentId = currentSubTask.getParentId();
+        Integer subTaskParentId = subTask.getParentId();
+        if (!currentParentId.equals(subTaskParentId)) return;
 
-        Integer epicId = previousSubTask.getParentId();
-        Epic epic = epicList.get(epicId);
-        epic.removeSubTask(previousSubTask); // удаляем сабтаску из списка эпиков
 
-        newSubTask.setParentId(epicId);
-        epic.addSubTaskToEpic(newSubTask);
+        Epic epic = epicList.get(currentParentId); //
+        epic.removeSubTask(currentSubTask); // удаляем сабтаску из списка эпиков
+        epic.addSubTaskToEpic(subTask); // добавляем сабтаску в список эпиков
         epic.updateStatus(); // обновляем статус эпика
-        subTaskList.put(previousSubTaskId,newSubTask);
+        subTaskList.put(subTask.getId(),subTask);
 
     }
 
@@ -117,16 +129,15 @@ public class TaskManager  {
     }
 
     public void removeAllEpic(){
-        removeAllSubTask();
+        subTaskList.clear();
         epicList.clear();
     }
 
     public void removeAllSubTask(){
 
-        for (Map.Entry<Integer, Epic> integerEpicEntry : epicList.entrySet()) {
-            integerEpicEntry.getValue().getSubTaskList().clear();     // очищяем лист с подзадачами у эпиков
-            integerEpicEntry.getValue().updateStatus(); // обновляем статусы
-
+        for (Epic epic : epicList.values()) {
+            epic.removeSubTaskList();     // очищаем лист с подзадачами у эпиков
+            epic.updateStatus(); // обновляем статусы
         }
         subTaskList.clear();
     }
@@ -136,6 +147,8 @@ public class TaskManager  {
     public SubTask removeSubTask(Integer subTaskId) {
 
         SubTask subTaskToDelete = subTaskList.get(subTaskId);
+        if(subTaskToDelete == null) return null;
+
         Integer epicId = subTaskToDelete.getParentId();
         Epic epic = epicList.get(epicId);
         epic.removeSubTask(subTaskToDelete); // удаляем сабтаску из списка в эпике
@@ -145,7 +158,12 @@ public class TaskManager  {
     }
 
     public Epic removeEpic(Integer epicId) {
-        ArrayList<SubTask> subTaskToRemove = epicList.get(epicId).getSubTaskList();   // удаление подзадач
+
+        Epic epic = epicList.get(epicId);
+        if (epic == null) return null;
+
+        // удаление подзадач
+        ArrayList<SubTask> subTaskToRemove = epic.getSubTaskList();
         for (SubTask subTask : subTaskToRemove) {
             subTaskList.remove(subTask.getId());
         }
@@ -153,13 +171,13 @@ public class TaskManager  {
         return epicList.remove(epicId);
     }
 
-     // метод возвращяет лист со списком сссылок на сабтаски эпика
+     // метод возвращает лист со списком ссылок на сабтаски эпика
     public ArrayList<SubTask> getSubTasksByEpic (Integer epicId) {
 
         return epicList.get(epicId).getSubTaskList();
     }
 
-    // метод для обновление обновления id
+    // метод для обновления id
     private int generateId(){
         return id ++;
     }
