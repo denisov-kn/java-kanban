@@ -37,6 +37,8 @@ public class Main {
         print(inMemoryTaskManager.getTaskList());
         print(inMemoryTaskManager.getSubTask());
         print(inMemoryTaskManager.getEpicList());
+        System.out.println(" ");
+        System.out.println("История просмотра: ");
 
         System.out.println(" ");
         System.out.println("Проверяем  обновление задач: замену задач, обновление статусов у сабтасков и эпика ");
@@ -45,8 +47,6 @@ public class Main {
 
         Task task3 = inMemoryTaskManager.getTask(task.getId());
         task3.setStatus(Status.IN_PROGRESS);
-
-
 
         SubTask subTask4 = inMemoryTaskManager.getSubTask(subTask1.getId());
         subTask4.setSummary("Сабтаск5");
@@ -75,6 +75,10 @@ public class Main {
         print(inMemoryTaskManager.getSubTask());
         print(inMemoryTaskManager.getEpicList());
         System.out.println(" ");
+        System.out.println("История просмотра: ");
+        print(inMemoryTaskManager.getHistory());
+
+        System.out.println(" ");
         System.out.println("Проверяем удаление задач: эпик, сабтаски");
 
         inMemoryTaskManager.removeEpic(epic1.getId());
@@ -83,10 +87,11 @@ public class Main {
         print(inMemoryTaskManager.getTaskList());
         print(inMemoryTaskManager.getSubTask());
         print(inMemoryTaskManager.getEpicList());
-
+        print(inMemoryTaskManager.getHistory());
         System.out.println(" ");
-        System.out.println("Проверяем историю просмотра");
-        System.out.println(inMemoryTaskManager.getHistory());
+        System.out.println("История просмотра: ");
+        print(inMemoryTaskManager.getHistory());
+
 
     }
      // Печать задач
