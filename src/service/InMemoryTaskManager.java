@@ -14,12 +14,15 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap <Integer, Epic> epicList;
     private final HashMap <Integer, SubTask> subTaskList;
     private Integer id = 0;
+    private ArrayList<Task> browsingHistory;
 
 
     public InMemoryTaskManager() {
         epicList = new HashMap<>();
         subTaskList = new HashMap<>();
         taskList = new HashMap<>();
+        browsingHistory = new ArrayList<>();
+
 
     }
 
@@ -115,16 +118,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(Integer taskId) {
-        return taskList.get(taskId);
+        Task task = taskList.get(taskId);
+        setView(task);
+        return task;
     }
 
     @Override
     public Epic getEpic(Integer epicId) {
-        return epicList.get(epicId);
+        Epic epic = epicList.get(epicId);
+        setView(epic);
+        return epic;
     }
 
     @Override
     public SubTask getSubTask(Integer subTaskId) {
+        SubTask subTask = subTaskList.get(subTaskId);
+        setView(subTask);
         return subTaskList.get(subTaskId);
     }
 
@@ -190,9 +199,22 @@ public class InMemoryTaskManager implements TaskManager {
         return epicList.get(epicId).getSubTaskList();
     }
 
+    @Override
+    public ArrayList<Task> getHistory() {
+        if (browsingHistory.isEmpty()) return null;
+        return browsingHistory;
+    }
+
     // метод для обновления id
     private int generateId(){
         return id ++;
+    }
+
+    private <T extends Task> void setView(T task){
+        if (browsingHistory.size() == 10)
+            browsingHistory.removeFirst();
+        else
+            browsingHistory.add(task);
     }
 
 

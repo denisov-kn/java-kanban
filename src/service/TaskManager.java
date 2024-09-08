@@ -52,5 +52,5 @@ public interface TaskManager {
     // метод возвращает лист со списком ссылок на сабтаски эпика
     public ArrayList<SubTask> getSubTasksByEpic (Integer epicId);
 
-
+    ArrayList<Task> getHistory();
 }

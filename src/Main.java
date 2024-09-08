@@ -84,6 +84,10 @@ public class Main {
         print(inMemoryTaskManager.getSubTask());
         print(inMemoryTaskManager.getEpicList());
 
+        System.out.println(" ");
+        System.out.println("Проверяем историю просмотра");
+        System.out.println(inMemoryTaskManager.getHistory());
+
     }
      // Печать задач
     static void print (ArrayList arrayList) {
