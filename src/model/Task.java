@@ -66,7 +66,7 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
-        return Objects.equals(summary, task.summary) && status == task.status && Objects.equals(description, task.description) && Objects.equals(id, task.id);
+        return Objects.equals(id, task.id);
     }
 
     @Override

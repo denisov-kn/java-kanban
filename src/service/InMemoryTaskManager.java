@@ -21,11 +21,11 @@ public class InMemoryTaskManager implements TaskManager {
 
 
 
-    public InMemoryTaskManager() {
+    public InMemoryTaskManager(HistoryManager historyManager) {
         epicList = new HashMap<>();
         subTaskList = new HashMap<>();
         taskList = new HashMap<>();
-        historyManager = Managers.getDefaultHistory();
+        this.historyManager = historyManager;
 
     }
 
