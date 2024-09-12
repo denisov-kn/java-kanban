@@ -5,7 +5,6 @@ import model.SubTask;
 import model.Task;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public interface TaskManager {
 
@@ -48,6 +47,6 @@ public interface TaskManager {
     Epic removeEpic(Integer epicId);
 
     // метод возвращает лист со списком ссылок на сабтаски эпика
-    public ArrayList<SubTask> getSubTasksByEpic (Integer epicId);
+    ArrayList<SubTask> getSubTasksByEpic (Integer epicId);
 
 }
