@@ -2,6 +2,8 @@ package model;
 
 /* Базовый класс для задач. Содержит в себе базовые поля.  Внутри есть также id, который передается извне. */
 
+import java.util.Objects;
+
 public class Task {
 
     private String summary;
@@ -64,7 +66,7 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Task task)) return false;
-        return id == task.id;
+        return Objects.equals(summary, task.summary) && status == task.status && Objects.equals(description, task.description) && Objects.equals(id, task.id);
     }
 
     @Override

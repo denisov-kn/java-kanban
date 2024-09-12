@@ -12,6 +12,7 @@ public class SubTask extends Task {
 
     }
 
+
     public Integer getParentId() {
         return parentId;
     }

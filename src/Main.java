@@ -2,7 +2,8 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import service.InMemoryTaskManager;
+import service.*;
+
 import java.util.ArrayList;
 
 public class Main {
@@ -10,7 +11,10 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+
+
+        InMemoryTaskManager inMemoryTaskManager = Managers.getDefaultManager();
+
 
         // Добавляем первоначальный набор задач
 
@@ -64,19 +68,19 @@ public class Main {
         subTask6.setDescription("Описание ii");
         subTask6.setStatus(Status.DONE);
 
-
+/*
         inMemoryTaskManager.updateTask(task3);
         inMemoryTaskManager.updateSubTask(subTask4);
         inMemoryTaskManager.updateSubTask(subTask5);
         inMemoryTaskManager.updateSubTask(subTask6);
-
+*/
 
         print(inMemoryTaskManager.getTaskList());
         print(inMemoryTaskManager.getSubTask());
         print(inMemoryTaskManager.getEpicList());
         System.out.println(" ");
         System.out.println("История просмотра: ");
-        print(inMemoryTaskManager.getHistory());
+        print(inMemoryTaskManager.getHistoryManager().getHistory());
 
         System.out.println(" ");
         System.out.println("Проверяем удаление задач: эпик, сабтаски");
@@ -87,10 +91,9 @@ public class Main {
         print(inMemoryTaskManager.getTaskList());
         print(inMemoryTaskManager.getSubTask());
         print(inMemoryTaskManager.getEpicList());
-        print(inMemoryTaskManager.getHistory());
         System.out.println(" ");
         System.out.println("История просмотра: ");
-        print(inMemoryTaskManager.getHistory());
+        print(inMemoryTaskManager.getHistoryManager().getHistory());
 
 
     }
