@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+import java.util.List;
 
 import static utils.Equals.assertEqualsTask;
 
@@ -19,7 +20,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeAll
     public static void BeforeAll(){
-        inMemoryTaskManager = new InMemoryTaskManager(new EmptyHistoryManager());
+        inMemoryTaskManager = new InMemoryTaskManager();
     }
 
 
@@ -245,7 +246,7 @@ class InMemoryTaskManagerTest {
         inMemoryTaskManager.create(subTask2);
         inMemoryTaskManager.create(subTask3);
 
-        ArrayList<SubTask> subTaskList = inMemoryTaskManager.getSubTasksByEpic(epic1.getId());
+        List<SubTask> subTaskList = inMemoryTaskManager.getSubTasksByEpic(epic1.getId());
 
         Assertions.assertEquals(3, subTaskList.size(),
                 "Cписок сабтасков должен быть состоять из 3-ех элементов");
@@ -260,7 +261,7 @@ class InMemoryTaskManagerTest {
         }
 
         @Override
-        public ArrayList<Task> getHistory() {
+        public List<Task> getHistory() {
             return new ArrayList<>();
         }
     }

@@ -4,7 +4,7 @@ import model.SubTask;
 import model.Task;
 import service.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -98,7 +98,7 @@ public class Main {
 
     }
      // Печать задач
-    static void print (ArrayList arrayList) {
+    static void print (List arrayList) {
 
         for (Object obj : arrayList) {
             System.out.println(obj);

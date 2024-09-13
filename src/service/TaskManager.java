@@ -3,16 +3,15 @@ package service;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-
-import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
-    ArrayList <SubTask> getSubTask();
+    List <SubTask> getSubTask();
 
-    ArrayList <Task> getTaskList();
+    List <Task> getTaskList();
 
-    ArrayList <Epic> getEpicList();
+    List <Epic> getEpicList();
 
     Task create(Task task);
 
@@ -47,6 +46,9 @@ public interface TaskManager {
     Epic removeEpic(Integer epicId);
 
     // метод возвращает лист со списком ссылок на сабтаски эпика
-    ArrayList<SubTask> getSubTasksByEpic (Integer epicId);
+    List<SubTask> getSubTasksByEpic (Integer epicId);
+
+    List<Task> getHistory();
+
 
 }

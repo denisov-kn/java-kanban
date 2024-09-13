@@ -1,13 +1,14 @@
 package model;
 
-/* Епик содержит в себя ссылки на сабтаски. Статус эпика вычисляется через совокупность статусов сабтасок */
+/* Епик содержит в себе ссылки на сабтаски. Статус эпика вычисляется через совокупность статусов сабтасок */
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task {
 
 
-    private ArrayList<SubTask> subTaskList ;
+    private List<SubTask> subTaskList ;
 
     public Epic(String summary, String description) {
         super(summary, description, Status.NEW);
@@ -50,7 +51,7 @@ public class Epic extends Task {
         subTaskList.add(subTask);
     }
 
-    public ArrayList<SubTask> getSubTaskList() {
+    public List<SubTask> getSubTaskList() {
         return new ArrayList<>(subTaskList);
     }
 

@@ -6,8 +6,7 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.*;
-
-import java.util.ArrayList;
+import java.util.List;
 
 import static utils.Equals.assertEqualsTask;
 
@@ -35,7 +34,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(epic);
         inMemoryHistoryManager.add(subTask);
 
-        ArrayList<Task> history = inMemoryHistoryManager.getHistory();
+        List<Task> history = inMemoryHistoryManager.getHistory();
 
         Assertions.assertEquals(3, history.size(), "В историю должны добавляться все задачи");
 
@@ -57,7 +56,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(lastTask);
         lastTask.setId(10);
 
-        ArrayList<Task> history = inMemoryHistoryManager.getHistory();
+        List<Task> history = inMemoryHistoryManager.getHistory();
 
         assertEqualsTask(secondTask, history.getFirst(), "История должна сохранять только 10 последних задач");
         assertEqualsTask(lastTask, history.getLast(), "История должна сохранять только 10 последних задач");
@@ -75,7 +74,7 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.add(task1);
         inMemoryHistoryManager.add(task2);
 
-        ArrayList<Task> history = inMemoryHistoryManager.getHistory();
+        List<Task> history = inMemoryHistoryManager.getHistory();
 
         assertEqualsTask(task1, history.get(0),"Не должна перезаписываться предыдущая задача");
         assertEqualsTask(task2, history.get(1), "Не должна перезаписываться предыдущая задача");

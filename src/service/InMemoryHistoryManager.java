@@ -3,10 +3,12 @@ package service;
 import model.Task;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class InMemoryHistoryManager implements  HistoryManager {
 
-    private ArrayList<Task> browsingHistory;
+    private List<Task> browsingHistory;
 
     public InMemoryHistoryManager() {
         this.browsingHistory = new ArrayList<>();
@@ -14,15 +16,17 @@ public class InMemoryHistoryManager implements  HistoryManager {
 
     @Override
     public <T extends Task> void add(T task) {
-        if (browsingHistory.size() == 10) browsingHistory.removeFirst();
-        browsingHistory.add(task);
+        if (task != null) {
+            if (browsingHistory.size() == 10) browsingHistory.removeFirst();
+            browsingHistory.add(task);
+        }
     }
 
 
     @Override
-    public ArrayList<Task> getHistory() {
-        if (browsingHistory.isEmpty()) return null;
-        return browsingHistory;
+    public List<Task> getHistory() {
+        if (browsingHistory.isEmpty()) return Collections.emptyList();
+        return new ArrayList<>(browsingHistory);
     }
 
 
