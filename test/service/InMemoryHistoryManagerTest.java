@@ -179,23 +179,4 @@ class InMemoryHistoryManagerTest {
         Assertions.assertEquals(task0, history.get(1),"В конце истории должно быть задача 0");
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

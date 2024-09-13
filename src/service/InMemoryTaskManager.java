@@ -1,7 +1,9 @@
 package service;
+
 import model.Epic;
 import model.SubTask;
 import model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -225,8 +227,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void clearAllTasksInHistory (Map<Integer, ? extends Task> taskList) {
-        for(Integer taskId : taskList.keySet())
-            historyManager.remove(taskId);
+
+        if(!historyManager.getHistory().isEmpty()) {
+            for (Integer taskId : taskList.keySet())
+                historyManager.remove(taskId);
+        }
     }
 
     @Override

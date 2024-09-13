@@ -2,15 +2,14 @@ package service;
 
 import model.Task;
 
-
 import java.util.*;
 
 public class InMemoryHistoryManager implements  HistoryManager {
 
-    private HistoryHashMap<Task> browsingHistory;
+    private HistoryHashMap browsingHistory;
 
     public InMemoryHistoryManager() {
-        this.browsingHistory = new HistoryHashMap<>();
+        this.browsingHistory = new HistoryHashMap();
     }
 
     @Override
@@ -34,18 +33,19 @@ public class InMemoryHistoryManager implements  HistoryManager {
 
     @Override
     public void remove(int id) {
-
-        browsingHistory.removeNode(browsingHistory.hashMap.get(id));
-        browsingHistory.hashMap.remove(id);
+        if (!browsingHistory.isEmpty()) {
+            browsingHistory.removeNode(browsingHistory.hashMap.get(id));
+            browsingHistory.hashMap.remove(id);
+        }
     }
 
 
 
-    private class HistoryHashMap<T extends Task> {
+    private static class HistoryHashMap {
 
-        private Map<Integer, HistoryNode<T>> hashMap;
-        private HistoryNode<T> head;
-        private HistoryNode<T> tail;
+        private final Map<Integer, HistoryNode> hashMap;
+        private HistoryNode head;
+        private HistoryNode tail;
         private int size = 0;
 
 
@@ -53,10 +53,10 @@ public class InMemoryHistoryManager implements  HistoryManager {
             hashMap = new HashMap<>();
         }
 
-        public void linkLast(T task){
+        public void linkLast(Task task){
 
-            final HistoryNode<T> oldTail = tail;
-            final HistoryNode<T> newNode = new HistoryNode<>(task,null, oldTail);
+            final HistoryNode oldTail = tail;
+            final HistoryNode newNode = new HistoryNode(task,null, oldTail);
             tail = newNode;
             if (oldTail == null)
                 head = newNode;
@@ -71,7 +71,7 @@ public class InMemoryHistoryManager implements  HistoryManager {
 
         public ArrayList<Task> getTasks () {
             ArrayList<Task> listTask= new ArrayList<>();
-            HistoryNode<T> currentNode = head;
+            HistoryNode currentNode = head;
             while (currentNode != null) {
                 listTask.add(currentNode.data);
                 currentNode = currentNode.next;
@@ -85,11 +85,7 @@ public class InMemoryHistoryManager implements  HistoryManager {
             return false;
         }
 
-        public  void removeNode(HistoryNode<T> node) {
-
-            if (isEmpty()) {
-                return;
-            }
+        public  void removeNode(HistoryNode node) {
 
             if (size == 1) { // Если в списке только одно значение
                 head = null;
@@ -101,31 +97,23 @@ public class InMemoryHistoryManager implements  HistoryManager {
             // Если голова содержит удаляемое значение
             if (head.data == node.data) {
                 head = head.next;
-                HistoryNode<T> nodeNext = node.next;
+                HistoryNode nodeNext = node.next;
                 nodeNext.prev = null;
-                return;
-            }
-
-            if (tail.data == node.data) {
+            } else if (tail.data == node.data) {  // Если хвост содержит удаляемое значение
                 tail = tail.prev;
-                HistoryNode<T> nodePrev = node.prev;
+                HistoryNode nodePrev = node.prev;
                 nodePrev.next = null;
-                return;
+
+            } else {  // Если удаляемое значение возможно в середине
+                HistoryNode current = head;
+                while (current.next != null && current.next.data != node.data) {
+                    current = current.next;
+                }
+
+                if (current.next != null) {   // Если значение найдено
+                    current.next = current.next.next;
+                }
             }
-
-
-            HistoryNode<T> current = head;
-            while (current.next != null && current.next.data != node.data) {
-                current = current.next;
-            }
-
-            // Если значение найдено
-            if (current.next != null) {
-                current.next = current.next.next;
-            }
-
         }
-
-
     }
 }

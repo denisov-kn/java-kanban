@@ -1,12 +1,14 @@
 package service;
 
-public class HistoryNode <T> {
+import model.Task;
 
-    public T data;
-    public HistoryNode<T> next;
-    public HistoryNode<T> prev;
+public class HistoryNode {
 
-    public HistoryNode(T data, HistoryNode<T> next, HistoryNode<T> prev) {
+    public Task data;
+    public HistoryNode next;
+    public HistoryNode prev;
+
+    public HistoryNode(Task data, HistoryNode next, HistoryNode prev) {
         this.data = data;
         this.next = next;
         this.prev = prev;

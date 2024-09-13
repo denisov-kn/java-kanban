@@ -5,7 +5,7 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +18,8 @@ class InMemoryTaskManagerTest {
 
     private static InMemoryTaskManager inMemoryTaskManager;
 
-    @BeforeAll
-    public static void BeforeAll(){
+    @BeforeEach
+    public void BeforeEach(){
         inMemoryTaskManager = new InMemoryTaskManager();
     }
 
@@ -264,8 +264,4 @@ class InMemoryTaskManagerTest {
         assertEqualsTask(subTask2, subTaskList.get(1), "Должен возвращаться верный сабтаск");
         assertEqualsTask(subTask3, subTaskList.get(2), "Должен возвращаться верный сабтаск");
     }
-
-
-
-
 }
