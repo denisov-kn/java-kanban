@@ -1,7 +1,7 @@
 package service;
 
 import model.Task;
-import org.junit.platform.engine.support.hierarchical.Node;
+
 
 import java.util.*;
 
@@ -112,7 +112,6 @@ public class InMemoryHistoryManager implements  HistoryManager {
                 nodePrev.next = null;
                 return;
             }
-
 
 
             HistoryNode<T> current = head;

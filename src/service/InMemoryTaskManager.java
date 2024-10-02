@@ -157,7 +157,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllEpic(){
-
         clearAllTasksInHistory(subTaskList);
         clearAllTasksInHistory(epicList);
         subTaskList.clear();
