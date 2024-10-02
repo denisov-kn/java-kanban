@@ -141,6 +141,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять задачу")
     public void shouldRemoveTask (){
         Task task = new Task("Задача 1", "Описание 1", Status.NEW);
         inMemoryTaskManager.create(task);
@@ -152,6 +153,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять эпик и его сабтаски")
     public void shouldRemoveEpicAndSubTasksOfEpic(){
         Epic epic = new Epic("Эпик 1", "Описание 2");
         inMemoryTaskManager.create(epic);
@@ -171,6 +173,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять сабтаску")
     public void shouldRemoveSubTask() {
         Epic epic = new Epic("Эпик 1", "Описание 2");
         inMemoryTaskManager.create(epic);
@@ -179,10 +182,14 @@ class InMemoryTaskManagerTest {
 
         inMemoryTaskManager.removeSubTask(subTask.getId());
 
-        Assertions.assertNull(inMemoryTaskManager.getSubTask(subTask.getId()), "Сабтаска должна быть удалена");
+        SubTask currentSubTask = inMemoryTaskManager.getSubTask(subTask.getId());
+
+        Assertions.assertNull(currentSubTask, "Сабтаска должна быть удалена");
+        Assertions.assertNull(subTask.getParentId(), "ParentId сабтаски должен быть пустой");
     }
 
     @Test
+    @DisplayName("должен удалять все задачи")
     public void shouldRemoveAllTask() {
         Task task1 = new Task("Задача 1", "Описание 1", Status.NEW);
         Task task2 = new Task("Задача 2", "Описание 2", Status.NEW);
@@ -197,6 +204,7 @@ class InMemoryTaskManagerTest {
 
 
     @Test
+    @DisplayName("должен удалять все эпики")
     public void shouldRemoveAllEpic() {
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         Epic epic2 = new Epic("Эпик 2", "Описание 2");
@@ -220,6 +228,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять все сабтаски")
     public void shouldRemoveAllSubTask() {
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         inMemoryTaskManager.create(epic1);
@@ -236,6 +245,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен возвращать все сабтаски у эпика")
     public void shouldGetSubTaskByEpicId () {
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         inMemoryTaskManager.create(epic1);

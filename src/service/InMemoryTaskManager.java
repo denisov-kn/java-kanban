@@ -187,6 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.updateStatus(); // обновляем статус эпика
 
         historyManager.remove(subTaskId);
+        subTaskToDelete.removeParentId();
         return subTaskList.remove(subTaskId);
     }
 
@@ -201,6 +202,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (SubTask subTask : subTaskToRemove) {
             historyManager.remove(subTask.getId());
             subTaskList.remove(subTask.getId());
+            subTask.removeParentId();
         }
 
         historyManager.remove(epicId);
