@@ -255,25 +255,6 @@ class InMemoryTaskManagerTest {
         assertEqualsTask(subTask3, subTaskList.get(2), "Должен возвращаться верный сабтаск");
     }
 
-    private static class EmptyHistoryManager implements HistoryManager{
-        @Override
-        public <T extends Task> void add(T task) {
-        }
-
-        @Override
-        public List<Task> getHistory() {
-            return new ArrayList<>();
-        }
-
-        @Override
-        public void remove(int id) {
-
-        }
-    }
-
-
-
-
 
 
 

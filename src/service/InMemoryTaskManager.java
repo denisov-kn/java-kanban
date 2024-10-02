@@ -13,7 +13,7 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
 
     private final Map <Integer, Task> taskList;
-    private final Map<Integer, Epic> epicList;
+    private final Map <Integer, Epic> epicList;
     private final Map <Integer, SubTask> subTaskList;
     private Integer id = 0;
     private final HistoryManager historyManager;
@@ -145,16 +145,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task removeTask(Integer taskId) {
+        historyManager.remove(taskId);
         return taskList.remove(taskId);
     }
 
     @Override
     public void removeAllTask() {
+        clearAllTasksInHistory(taskList);
         taskList.clear();
     }
 
     @Override
     public void removeAllEpic(){
+
+        clearAllTasksInHistory(subTaskList);
+        clearAllTasksInHistory(epicList);
         subTaskList.clear();
         epicList.clear();
     }
@@ -166,6 +171,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.removeSubTaskList();     // очищаем лист с подзадачами у эпиков
             epic.updateStatus(); // обновляем статусы
         }
+        clearAllTasksInHistory(subTaskList);
         subTaskList.clear();
     }
 
@@ -180,6 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.removeSubTask(subTaskToDelete); // удаляем сабтаску из списка в эпике
         epic.updateStatus(); // обновляем статус эпика
 
+        historyManager.remove(subTaskId);
         return subTaskList.remove(subTaskId);
     }
 
@@ -192,9 +199,11 @@ public class InMemoryTaskManager implements TaskManager {
         // удаление подзадач
         List<SubTask> subTaskToRemove = epic.getSubTaskList();
         for (SubTask subTask : subTaskToRemove) {
+            historyManager.remove(subTask.getId());
             subTaskList.remove(subTask.getId());
         }
 
+        historyManager.remove(epicId);
         return epicList.remove(epicId);
     }
 
@@ -212,6 +221,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     public Map<Integer, SubTask> getSubTaskList() {
         return subTaskList;
+    }
+
+    private void clearAllTasksInHistory (Map<Integer, ? extends Task> taskList) {
+        for(Integer taskId : taskList.keySet())
+            historyManager.remove(taskId);
     }
 
     @Override
