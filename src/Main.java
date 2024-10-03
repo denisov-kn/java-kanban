@@ -2,7 +2,9 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import service.*;
+import service.HistoryManager;
+import service.Managers;
+import service.TaskManager;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ public class Main {
         System.out.println("Поехали!");
 
         TaskManager inMemoryTaskManager = Managers.getDefaultManager();
-        HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+        HistoryManager inMemoryHistoryManager = inMemoryTaskManager.getHistoryManager();
 
 
         // Добавляем первоначальный набор задач

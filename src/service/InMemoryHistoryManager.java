@@ -13,7 +13,7 @@ public class InMemoryHistoryManager implements  HistoryManager {
     }
 
     @Override
-    public <T extends Task> void add(T task) {
+    public void add(Task task) {
         if (task == null) {
             return;
         }
@@ -90,9 +90,9 @@ public class InMemoryHistoryManager implements  HistoryManager {
             if (size == 1) { // Если в списке только одно значение
                 head = null;
                 tail = null;
+                size = 0;
                 return;
             }
-
 
             // Если голова содержит удаляемое значение
             if (head.data == node.data) {
