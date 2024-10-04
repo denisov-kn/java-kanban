@@ -88,8 +88,9 @@ public class Main {
 
 
     }
+
      // Печать задач
-    static void print (List arrayList) {
+    static void print(List arrayList) {
 
         for (Object obj : arrayList) {
             System.out.println(obj);
