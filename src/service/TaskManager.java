@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface TaskManager {
 
-    List <SubTask> getSubTask();
+    List<SubTask> getSubTask();
 
-    List <Task> getTaskList();
+    List<Task> getTaskList();
 
-    List <Epic> getEpicList();
+    List<Epic> getEpicList();
 
     Task create(Task task);
 
@@ -47,7 +47,7 @@ public interface TaskManager {
     Epic removeEpic(Integer epicId);
 
     // метод возвращает лист со списком ссылок на сабтаски эпика
-    List<SubTask> getSubTasksByEpic (Integer epicId);
+    List<SubTask> getSubTasksByEpic(Integer epicId);
 
     List<Task> getHistory();
 
