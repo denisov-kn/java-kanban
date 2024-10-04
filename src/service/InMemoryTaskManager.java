@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый свою хешмапу.
+/* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый в свою хешмапу.
 В параметрах есть Id - сквозной для всех задач (всех типов) */
 
 public class InMemoryTaskManager implements TaskManager {
@@ -98,9 +98,15 @@ public class InMemoryTaskManager implements TaskManager {
 
         Epic currentEpic = epicList.get(epic.getId());
         if (currentEpic == null) return;
+        for (SubTask subTask : currentEpic.getSubTaskList()) {
+            epic.addSubTaskToEpic(subTask);
+        }
 
-        currentEpic.setSummary(epic.getSummary());
-        currentEpic.setDescription(epic.getDescription());
+        epicList.put(epic.getId(),epic);
+
+
+    //    currentEpic.setSummary(epic.getSummary());
+    //    currentEpic.setDescription(epic.getDescription());
 
     }
 
