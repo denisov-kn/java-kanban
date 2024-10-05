@@ -33,12 +33,11 @@ public class InMemoryHistoryManager implements  HistoryManager {
 
     @Override
     public void remove(int id) {
-        if (!browsingHistory.isEmpty()) {
+        if (!browsingHistory.isEmpty() && browsingHistory.hashMap.containsKey(id)) {
             browsingHistory.removeNode(browsingHistory.hashMap.get(id));
             browsingHistory.hashMap.remove(id);
         }
     }
-
 
 
     private static class HistoryHashMap {
@@ -53,10 +52,10 @@ public class InMemoryHistoryManager implements  HistoryManager {
             hashMap = new HashMap<>();
         }
 
-        public void linkLast(Task task) {
+        private void linkLast(Task task) {
 
             final HistoryNode oldTail = tail;
-            final HistoryNode newNode = new HistoryNode(task,null, oldTail);
+            final HistoryNode newNode = new HistoryNode(task, null, oldTail);
             tail = newNode;
             if (oldTail == null)
                 head = newNode;
@@ -66,10 +65,10 @@ public class InMemoryHistoryManager implements  HistoryManager {
             }
 
             size++;
-            hashMap.put(task.getId(),newNode);
+            hashMap.put(task.getId(), newNode);
         }
 
-        public ArrayList<Task> getTasks() {
+        private ArrayList<Task> getTasks() {
             ArrayList<Task> listTask = new ArrayList<>();
             HistoryNode currentNode = head;
             while (currentNode != null) {
@@ -81,11 +80,10 @@ public class InMemoryHistoryManager implements  HistoryManager {
         }
 
         public boolean isEmpty() {
-            if (size == 0) return true;
-            return false;
+            return size == 0;
         }
 
-        public  void removeNode(HistoryNode node) {
+        public void removeNode(HistoryNode node) {
 
             if (size == 1) { // Если в списке только одно значение
                 head = null;
@@ -97,23 +95,15 @@ public class InMemoryHistoryManager implements  HistoryManager {
             // Если голова содержит удаляемое значение
             if (head.data == node.data) {
                 head = head.next;
-                HistoryNode nodeNext = node.next;
-                nodeNext.prev = null;
+                head.prev = null;
             } else if (tail.data == node.data) {  // Если хвост содержит удаляемое значение
                 tail = tail.prev;
-                HistoryNode nodePrev = node.prev;
-                nodePrev.next = null;
-
-            } else {  // Если удаляемое значение возможно в середине
-                HistoryNode current = head;
-                while (current.next != null && current.next.data != node.data) {
-                    current = current.next;
-                }
-
-                if (current.next != null) {   // Если значение найдено
-                    current.next = current.next.next;
-                }
+                tail.next = null;
+            } else {  // Если удаляемое значение в середине
+                node.prev.next = node.next;
+                node.next.prev = node.prev;
             }
         }
     }
 }
+

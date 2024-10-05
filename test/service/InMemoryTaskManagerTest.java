@@ -185,7 +185,6 @@ class InMemoryTaskManagerTest {
         SubTask currentSubTask = inMemoryTaskManager.getSubTask(subTask.getId());
 
         Assertions.assertNull(currentSubTask, "Сабтаска должна быть удалена");
-        Assertions.assertNull(subTask.getParentId(), "ParentId сабтаски должен быть пустой");
     }
 
     @Test

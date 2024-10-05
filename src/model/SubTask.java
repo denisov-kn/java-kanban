@@ -2,7 +2,6 @@ package model;
 
 /* Каждая сабтаска имеет ссылку только на один эпик. */
 
-
 public class SubTask extends Task {
         private Integer parentId;
 
@@ -12,12 +11,7 @@ public class SubTask extends Task {
 
     }
 
-
     public Integer getParentId() {
         return parentId;
-    }
-
-    public void removeParentId() {
-        this.parentId = null;
     }
 }

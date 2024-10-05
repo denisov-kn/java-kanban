@@ -96,19 +96,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-
         Epic currentEpic = epicList.get(epic.getId());
         if (currentEpic == null) return;
-        for (SubTask subTask : currentEpic.getSubTaskList()) {
-            epic.addSubTaskToEpic(subTask);
-        }
-
+        currentEpic.setSummary(epic.getSummary());
+        currentEpic.setDescription(epic.getDescription());
         epicList.put(epic.getId(),epic);
-
-
-    //    currentEpic.setSummary(epic.getSummary());
-    //    currentEpic.setDescription(epic.getDescription());
-
     }
 
     @Override
@@ -195,7 +187,6 @@ public class InMemoryTaskManager implements TaskManager {
         epic.updateStatus(); // обновляем статус эпика
 
         historyManager.remove(subTaskId);
-        subTaskToDelete.removeParentId();
         return subTaskList.remove(subTaskId);
     }
 
@@ -210,7 +201,6 @@ public class InMemoryTaskManager implements TaskManager {
         for (SubTask subTask : subTaskToRemove) {
             historyManager.remove(subTask.getId());
             subTaskList.remove(subTask.getId());
-            subTask.removeParentId();
         }
 
         historyManager.remove(epicId);
