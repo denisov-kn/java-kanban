@@ -5,10 +5,10 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import static utils.Equals.assertEqualsTask;
@@ -18,8 +18,8 @@ class InMemoryTaskManagerTest {
 
     private static InMemoryTaskManager inMemoryTaskManager;
 
-    @BeforeAll
-    public static void BeforeAll(){
+    @BeforeEach
+    public void BeforeEach(){
         inMemoryTaskManager = new InMemoryTaskManager();
     }
 
@@ -141,6 +141,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять задачу")
     public void shouldRemoveTask (){
         Task task = new Task("Задача 1", "Описание 1", Status.NEW);
         inMemoryTaskManager.create(task);
@@ -152,6 +153,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять эпик и его сабтаски")
     public void shouldRemoveEpicAndSubTasksOfEpic(){
         Epic epic = new Epic("Эпик 1", "Описание 2");
         inMemoryTaskManager.create(epic);
@@ -171,6 +173,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять сабтаску")
     public void shouldRemoveSubTask() {
         Epic epic = new Epic("Эпик 1", "Описание 2");
         inMemoryTaskManager.create(epic);
@@ -179,10 +182,13 @@ class InMemoryTaskManagerTest {
 
         inMemoryTaskManager.removeSubTask(subTask.getId());
 
-        Assertions.assertNull(inMemoryTaskManager.getSubTask(subTask.getId()), "Сабтаска должна быть удалена");
+        SubTask currentSubTask = inMemoryTaskManager.getSubTask(subTask.getId());
+
+        Assertions.assertNull(currentSubTask, "Сабтаска должна быть удалена");
     }
 
     @Test
+    @DisplayName("должен удалять все задачи")
     public void shouldRemoveAllTask() {
         Task task1 = new Task("Задача 1", "Описание 1", Status.NEW);
         Task task2 = new Task("Задача 2", "Описание 2", Status.NEW);
@@ -197,6 +203,7 @@ class InMemoryTaskManagerTest {
 
 
     @Test
+    @DisplayName("должен удалять все эпики")
     public void shouldRemoveAllEpic() {
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         Epic epic2 = new Epic("Эпик 2", "Описание 2");
@@ -220,6 +227,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен удалять все сабтаски")
     public void shouldRemoveAllSubTask() {
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         inMemoryTaskManager.create(epic1);
@@ -236,6 +244,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    @DisplayName("должен возвращать все сабтаски у эпика")
     public void shouldGetSubTaskByEpicId () {
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         inMemoryTaskManager.create(epic1);
@@ -254,16 +263,4 @@ class InMemoryTaskManagerTest {
         assertEqualsTask(subTask2, subTaskList.get(1), "Должен возвращаться верный сабтаск");
         assertEqualsTask(subTask3, subTaskList.get(2), "Должен возвращаться верный сабтаск");
     }
-
-    private static class EmptyHistoryManager implements HistoryManager{
-        @Override
-        public <T extends Task> void add(T task) {
-        }
-
-        @Override
-        public List<Task> getHistory() {
-            return new ArrayList<>();
-        }
-    }
-
 }

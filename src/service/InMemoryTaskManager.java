@@ -1,20 +1,22 @@
 package service;
+
 import model.Epic;
 import model.SubTask;
 import model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый свою хешмапу.
+/* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый в свою хешмапу.
 В параметрах есть Id - сквозной для всех задач (всех типов) */
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final Map <Integer, Task> taskList;
+    private final Map<Integer, Task> taskList;
     private final Map<Integer, Epic> epicList;
-    private final Map <Integer, SubTask> subTaskList;
+    private final Map<Integer, SubTask> subTaskList;
     private Integer id = 0;
     private final HistoryManager historyManager;
 
@@ -28,6 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
+    @Override
     public HistoryManager getHistoryManager() {
         return historyManager;
     }
@@ -39,12 +42,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List <Task> getTaskList() {
+    public List<Task> getTaskList() {
         return new ArrayList<>(taskList.values());
     }
 
     @Override
-    public List <Epic> getEpicList() {
+    public List<Epic> getEpicList() {
         return new ArrayList<>(epicList.values());
     }
 
@@ -74,7 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
         int currentId = generateId();
 
         Epic epic = epicList.get(subTask.getParentId());
-        if(epic == null) return null;
+        if (epic == null) return null;
 
         subTask.setId(currentId);
         epic.addSubTaskToEpic(subTask);
@@ -93,13 +96,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-
         Epic currentEpic = epicList.get(epic.getId());
         if (currentEpic == null) return;
-
         currentEpic.setSummary(epic.getSummary());
         currentEpic.setDescription(epic.getDescription());
-
     }
 
     @Override
@@ -145,27 +145,32 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task removeTask(Integer taskId) {
+        historyManager.remove(taskId);
         return taskList.remove(taskId);
     }
 
     @Override
     public void removeAllTask() {
+        clearAllTasksInHistory(taskList);
         taskList.clear();
     }
 
     @Override
-    public void removeAllEpic(){
+    public void removeAllEpic() {
+        clearAllTasksInHistory(subTaskList);
+        clearAllTasksInHistory(epicList);
         subTaskList.clear();
         epicList.clear();
     }
 
     @Override
-    public void removeAllSubTask(){
+    public void removeAllSubTask() {
 
         for (Epic epic : epicList.values()) {
             epic.removeSubTaskList();     // очищаем лист с подзадачами у эпиков
             epic.updateStatus(); // обновляем статусы
         }
+        clearAllTasksInHistory(subTaskList);
         subTaskList.clear();
     }
 
@@ -173,13 +178,14 @@ public class InMemoryTaskManager implements TaskManager {
     public SubTask removeSubTask(Integer subTaskId) {
 
         SubTask subTaskToDelete = subTaskList.get(subTaskId);
-        if(subTaskToDelete == null) return null;
+        if (subTaskToDelete == null) return null;
 
         Integer epicId = subTaskToDelete.getParentId();
         Epic epic = epicList.get(epicId);
         epic.removeSubTask(subTaskToDelete); // удаляем сабтаску из списка в эпике
         epic.updateStatus(); // обновляем статус эпика
 
+        historyManager.remove(subTaskId);
         return subTaskList.remove(subTaskId);
     }
 
@@ -192,26 +198,36 @@ public class InMemoryTaskManager implements TaskManager {
         // удаление подзадач
         List<SubTask> subTaskToRemove = epic.getSubTaskList();
         for (SubTask subTask : subTaskToRemove) {
+            historyManager.remove(subTask.getId());
             subTaskList.remove(subTask.getId());
         }
 
+        historyManager.remove(epicId);
         return epicList.remove(epicId);
     }
 
      // метод возвращает лист со списком ссылок на сабтаски эпика
     @Override
-    public List<SubTask> getSubTasksByEpic (Integer epicId) {
+    public List<SubTask> getSubTasksByEpic(Integer epicId) {
 
         return epicList.get(epicId).getSubTaskList();
     }
 
     // метод для обновления id
-    private int generateId(){
-        return id ++;
+    private int generateId() {
+        return id++;
     }
 
     public Map<Integer, SubTask> getSubTaskList() {
         return subTaskList;
+    }
+
+    private void clearAllTasksInHistory(Map<Integer, ? extends Task> taskList) {
+
+        if (!historyManager.getHistory().isEmpty()) {
+            for (Integer taskId : taskList.keySet())
+                historyManager.remove(taskId);
+        }
     }
 
     @Override
