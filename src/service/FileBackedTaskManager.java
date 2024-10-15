@@ -3,6 +3,9 @@ package service;
 import model.*;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 
 public class FileBackedTaskManager extends InMemoryTaskManager  implements TaskManager  {
@@ -14,6 +17,26 @@ public class FileBackedTaskManager extends InMemoryTaskManager  implements TaskM
     }
 
     public void save () {
+
+        try(Writer fileWriter = new FileWriter("backup.txt")){
+
+
+            fileWriter.write("id,type,name,status,description,epic\n");
+            for (Task task: super.getTaskList()) {
+                fileWriter.write(toStringForBacked(task));
+            }
+
+            for (Epic epic: super.getEpicList()) {
+                fileWriter.write(toStringForBacked(epic));
+            }
+
+            for (SubTask subTask: super.getSubTaskList()) {
+                fileWriter.write(toStringForBacked(subTask));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

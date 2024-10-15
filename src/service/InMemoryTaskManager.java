@@ -36,7 +36,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<SubTask> getSubTask() {
+    public List<SubTask> getSubTaskList() {
 
         return new ArrayList<>(subTaskList.values());
     }
@@ -216,10 +216,6 @@ public class InMemoryTaskManager implements TaskManager {
     // метод для обновления id
     private int generateId() {
         return id++;
-    }
-
-    public Map<Integer, SubTask> getSubTaskList() {
-        return subTaskList;
     }
 
     private void clearAllTasksInHistory(Map<Integer, ? extends Task> taskList) {
