@@ -2,46 +2,78 @@ package service;
 
 import model.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class FileBackedTaskManager extends InMemoryTaskManager  implements TaskManager  {
+public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager  {
 
-    private File file;
+    File file;
 
-    public FileBackedTaskManager (File file) {
+    public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
-    public void save () {
 
-        try(Writer fileWriter = new FileWriter("backup.txt")){
+    public void save(){
 
+        try(Writer fileWriter = new FileWriter(file.getAbsolutePath())){
 
             fileWriter.write("id,type,name,status,description,epic\n");
-            for (Task task: super.getTaskList()) {
-                fileWriter.write(toStringForBacked(task));
+
+            for (Task task: this.getTaskList()) {
+                fileWriter.write(toStringForBacked(task) + "\n");
             }
 
-            for (Epic epic: super.getEpicList()) {
-                fileWriter.write(toStringForBacked(epic));
+            for (Epic epic: this.getEpicList()) {
+                fileWriter.write(toStringForBacked(epic) + "\n");
             }
 
-            for (SubTask subTask: super.getSubTaskList()) {
-                fileWriter.write(toStringForBacked(subTask));
+            for (SubTask subTask: this.getSubTaskList()) {
+                fileWriter.write(toStringForBacked(subTask) + "\n");
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+                e.printStackTrace();
+            }
+
 
     }
 
-    static FileBackedTaskManager loadFromFile(File file) {
+    static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException {
 
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
+
+        List <String> backup = new ArrayList<>();
+        if(file.exists()) {
+            try (BufferedReader fileReader = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+                fileReader.readLine();
+
+                while (fileReader.ready()) {
+                          backup.add(fileReader.readLine());
+                }
+            } catch (IOException e) {
+                throw new ManagerSaveException("Ошибка в файле:" + file.getAbsolutePath(), e);
+            }
+
+        }
+
+        if (!backup.isEmpty()) {
+            int maxId = 0;
+            for (String backupLine : backup) {
+                Task task = fileBackedTaskManager.fromString(backupLine);
+
+                fileBackedTaskManager.backupTask(task);
+                int taskId = task.getId();
+                if (taskId > maxId) maxId = taskId;
+            }
+
+            fileBackedTaskManager.backupId(maxId);
+
+        }
+
+        return fileBackedTaskManager;
     }
 
     private String toStringForBacked(Task task) {
@@ -66,7 +98,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager  implements TaskM
 
     }
 
-    private Task fromString (String str) {
+    private Task fromString(String str) {
         String[] strList = str.split(",");
 
         if (strList[1].equals(Type.EPIC.name())) {
@@ -94,7 +126,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager  implements TaskM
             return task;
 
         }
-
 
     }
 
@@ -178,6 +209,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager  implements TaskM
         super.removeAllEpic();
         save();
     }
-
 
 }

@@ -73,6 +73,29 @@ public class Task {
     public int hashCode() {
         return id;
     }
+
+
+    public String toStringForBacked(Task task) {
+
+        Type type;
+        if (task instanceof Epic) {
+            type = Type.EPIC;
+        } else if (task instanceof SubTask) {
+            type = Type.SUBTASK;
+        } else {
+            type = Type.TASK;
+        }
+
+        String str =  task.getId() +
+                "," + type +
+                "," + task.getSummary() +
+                "," + task.getStatus() +
+                "," + task.getDescription() + ",";
+        if (type.equals(Type.SUBTASK))
+            str += ((SubTask) task).getParentId();
+        return str;
+
+    }
 }
 
 

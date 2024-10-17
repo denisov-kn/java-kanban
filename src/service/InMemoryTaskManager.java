@@ -226,6 +226,24 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    protected void backupTask(Task task) {
+        if (task instanceof Epic) {
+            epicList.put(task.getId(), (Epic) task);
+        } else if (task instanceof SubTask) {
+            subTaskList.put(task.getId(), (SubTask) task);
+        } else {
+            taskList.put(task.getId(), task);
+        }
+    }
+
+    protected void backupId (int id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
