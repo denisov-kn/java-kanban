@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@DisplayName("Менеджер задач с бекапом в файл")
 class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
 
     File file;
