@@ -23,15 +23,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             fileWriter.write("id,type,name,status,description,epic\n");
 
             for (Task task: this.getTaskList()) {
-                fileWriter.write(toStringForBacked(task) + "\n");
+                fileWriter.write(toString(task) + "\n");
             }
 
             for (Epic epic: this.getEpicList()) {
-                fileWriter.write(toStringForBacked(epic) + "\n");
+                fileWriter.write(toString(epic) + "\n");
             }
 
             for (SubTask subTask: this.getSubTaskList()) {
-                fileWriter.write(toStringForBacked(subTask) + "\n");
+                fileWriter.write(toString(subTask) + "\n");
             }
 
         } catch (IOException e) {
@@ -76,7 +76,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
         return fileBackedTaskManager;
     }
 
-    private String toStringForBacked(Task task) {
+    private String toString(Task task) {
 
         Type type;
         if (task instanceof Epic) {
