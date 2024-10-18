@@ -16,7 +16,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
 
-    public void save() {
+    private void save() {
 
         try (Writer fileWriter = new FileWriter(file.getAbsolutePath())) {
 
@@ -35,13 +35,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             }
 
         } catch (IOException e) {
-                e.printStackTrace();
+            throw new ManagerSaveException("Ошибка в файле:" + file.getAbsolutePath(), e);
             }
-
-
     }
 
-    static FileBackedTaskManager loadFromFile(File file) throws ManagerSaveException {
+    public static FileBackedTaskManager loadFromFile(File file) {
 
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
@@ -105,6 +103,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
             Epic epic = new Epic(strList[2], strList[4]);
            epic.setId(Integer.parseInt(strList[0]));
+           epic.setStatus(Status.valueOf(strList[3]));
            return epic;
 
         } else if (strList[1].equals(Type.SUBTASK.name())) {
@@ -116,7 +115,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             );
 
             subTask.setId(Integer.parseInt(strList[0]));
-            super.getEpic(Integer.parseInt(strList[5])).addSubTaskToEpic(subTask);
             return subTask;
 
         } else {

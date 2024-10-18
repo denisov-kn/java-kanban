@@ -231,6 +231,7 @@ public class InMemoryTaskManager implements TaskManager {
             epicList.put(task.getId(), (Epic) task);
         } else if (task instanceof SubTask) {
             subTaskList.put(task.getId(), (SubTask) task);
+            epicList.get(((SubTask) task).getParentId()).addSubTaskToEpic((SubTask) task);
         } else {
             taskList.put(task.getId(), task);
         }
