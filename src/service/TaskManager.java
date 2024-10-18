@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TaskManager {
 
-    List<SubTask> getSubTask();
+    List<SubTask> getSubTaskList();
 
     List<Task> getTaskList();
 

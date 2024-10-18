@@ -38,7 +38,7 @@ public class Main {
         inMemoryTaskManager.create(subTask3);
 
         print(inMemoryTaskManager.getTaskList());
-        print(inMemoryTaskManager.getSubTask());
+        print(inMemoryTaskManager.getSubTaskList());
         print(inMemoryTaskManager.getEpicList());
 
         System.out.println(" ");

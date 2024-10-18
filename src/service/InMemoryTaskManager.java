@@ -36,7 +36,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<SubTask> getSubTask() {
+    public List<SubTask> getSubTaskList() {
 
         return new ArrayList<>(subTaskList.values());
     }
@@ -218,16 +218,31 @@ public class InMemoryTaskManager implements TaskManager {
         return id++;
     }
 
-    public Map<Integer, SubTask> getSubTaskList() {
-        return subTaskList;
-    }
-
     private void clearAllTasksInHistory(Map<Integer, ? extends Task> taskList) {
 
         if (!historyManager.getHistory().isEmpty()) {
             for (Integer taskId : taskList.keySet())
                 historyManager.remove(taskId);
         }
+    }
+
+    protected void backupTask(Task task) {
+        if (task instanceof Epic) {
+            epicList.put(task.getId(), (Epic) task);
+        } else if (task instanceof SubTask) {
+            subTaskList.put(task.getId(), (SubTask) task);
+            epicList.get(((SubTask) task).getParentId()).addSubTaskToEpic((SubTask) task);
+        } else {
+            taskList.put(task.getId(), task);
+        }
+    }
+
+    protected void backupId(int id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override

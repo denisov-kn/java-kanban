@@ -222,7 +222,7 @@ class InMemoryTaskManagerTest {
 
         Assertions.assertEquals(0, inMemoryTaskManager.getEpicList().size(),
                 "Все эпики должны быть удалены");
-        Assertions.assertEquals(0, inMemoryTaskManager.getSubTask().size(),
+        Assertions.assertEquals(0, inMemoryTaskManager.getSubTaskList().size(),
                 "Все сабтаски должны быть удалены");
     }
 
@@ -238,7 +238,7 @@ class InMemoryTaskManagerTest {
 
         inMemoryTaskManager.removeAllSubTask();
 
-        Assertions.assertEquals(0, inMemoryTaskManager.getSubTask().size(),
+        Assertions.assertEquals(0, inMemoryTaskManager.getSubTaskList().size(),
                 "Все сабтаски должны быть удалены");
 
     }
