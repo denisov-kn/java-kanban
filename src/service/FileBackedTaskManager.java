@@ -16,9 +16,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
 
-    public void save(){
+    public void save() {
 
-        try(Writer fileWriter = new FileWriter(file.getAbsolutePath())){
+        try (Writer fileWriter = new FileWriter(file.getAbsolutePath())) {
 
             fileWriter.write("id,type,name,status,description,epic\n");
 
@@ -45,8 +45,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
 
-        List <String> backup = new ArrayList<>();
-        if(file.exists()) {
+        List<String> backup = new ArrayList<>();
+        if (file.exists()) {
             try (BufferedReader fileReader = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
                 fileReader.readLine();
 
