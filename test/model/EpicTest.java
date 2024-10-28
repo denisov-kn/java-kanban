@@ -1,6 +1,9 @@
 package model;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("Эпик")
 class EpicTest {
@@ -26,7 +29,7 @@ class EpicTest {
     @Test
     @DisplayName("должен иметь статус NEW если все задачи имеют статус NEW")
     public void shouldEpicNewStatusIfAllSubTaskAreNew() {
-        epic.updateStatus();
+        epic.updateEpic();
         Assertions.assertEquals(Status.NEW, epic.getStatus());
     }
 
@@ -37,7 +40,7 @@ class EpicTest {
 
         subTask1.setStatus(Status.IN_PROGRESS);
         subTask3.setStatus(Status.DONE);
-        epic.updateStatus();
+        epic.updateEpic();
         Assertions.assertEquals(Status.IN_PROGRESS, epic.getStatus());
     }
 
@@ -47,7 +50,7 @@ class EpicTest {
         subTask1.setStatus(Status.DONE);
         subTask2.setStatus(Status.DONE);
         subTask3.setStatus(Status.DONE);
-        epic.updateStatus();
+        epic.updateEpic();
         Assertions.assertEquals(Status.DONE, epic.getStatus());
     }
 

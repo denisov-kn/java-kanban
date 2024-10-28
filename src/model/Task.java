@@ -1,8 +1,10 @@
 package model;
 
-/* Базовый класс для задач. Содержит в себе базовые поля.  Внутри есть также id, который передается извне. */
-
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
+
+/* Базовый класс для задач. Содержит в себе базовые поля.  Внутри есть также id, который передается извне. */
 
 public class Task {
 
@@ -10,12 +12,28 @@ public class Task {
     private Status status;
     private String description;
     private Integer id;
+    private Duration duration;
+    private LocalDateTime startTime;
 
-    public Task(String summary, String description, Status status) {
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Task(String summary, String description, Status status, Integer duration, LocalDateTime startTime) {
         this.summary = summary;
         this.description = description;
         this.status = status;
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(duration);
 
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
     }
 
     public void setId(Integer id) {
@@ -28,6 +46,14 @@ public class Task {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public String getDescription() {

@@ -81,7 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         subTask.setId(currentId);
         epic.addSubTaskToEpic(subTask);
-        epic.updateStatus();
+        epic.updateEpic();
         subTaskList.put(currentId, subTask);
 
         return subTask;
@@ -117,7 +117,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epicList.get(currentParentId); //
         epic.removeSubTask(currentSubTask); // удаляем сабтаску из списка эпиков
         epic.addSubTaskToEpic(subTask); // добавляем сабтаску в список эпиков
-        epic.updateStatus(); // обновляем статус эпика
+        epic.updateEpic(); // обновляем статус эпика
         subTaskList.put(subTask.getId(),subTask);
 
     }
@@ -168,7 +168,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Epic epic : epicList.values()) {
             epic.removeSubTaskList();     // очищаем лист с подзадачами у эпиков
-            epic.updateStatus(); // обновляем статусы
+            epic.updateEpic(); // обновляем статусы
         }
         clearAllTasksInHistory(subTaskList);
         subTaskList.clear();
@@ -183,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
         Integer epicId = subTaskToDelete.getParentId();
         Epic epic = epicList.get(epicId);
         epic.removeSubTask(subTaskToDelete); // удаляем сабтаску из списка в эпике
-        epic.updateStatus(); // обновляем статус эпика
+        epic.updateEpic(); // обновляем статус эпика
 
         historyManager.remove(subTaskId);
         return subTaskList.remove(subTaskId);
