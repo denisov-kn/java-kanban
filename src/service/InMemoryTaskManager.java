@@ -4,10 +4,7 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый в свою хешмапу.
 В параметрах есть Id - сквозной для всех задач (всех типов) */
@@ -20,14 +17,16 @@ public class InMemoryTaskManager implements TaskManager {
     private Integer id = 0;
     private final HistoryManager historyManager;
 
+    private final Set<Task> taskSet;
+
 
 
     public InMemoryTaskManager() {
         epicList = new HashMap<>();
         subTaskList = new HashMap<>();
         taskList = new HashMap<>();
+        taskSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         this.historyManager = Managers.getDefaultHistory();
-
     }
 
     @Override
@@ -57,6 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
         int currentId = generateId();
         task.setId(currentId);
         taskList.put(currentId, task);
+        taskSet.add(task);
 
         return task;
     }
@@ -66,7 +66,6 @@ public class InMemoryTaskManager implements TaskManager {
         int currentId = generateId();
         epic.setId(currentId);
         epicList.put(currentId, epic);
-
         return epic;
     }
 
@@ -83,6 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTaskToEpic(subTask);
         epic.updateEpic();
         subTaskList.put(currentId, subTask);
+        taskSet.add(subTask);
 
         return subTask;
     }
@@ -92,6 +92,7 @@ public class InMemoryTaskManager implements TaskManager {
         Task taskCheck = taskList.get(task.getId());
         if (taskCheck == null) return;
         taskList.put(task.getId(),task);
+        taskSet.add(task);
     }
 
     @Override
@@ -119,6 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTaskToEpic(subTask); // добавляем сабтаску в список эпиков
         epic.updateEpic(); // обновляем статус эпика
         subTaskList.put(subTask.getId(),subTask);
+        taskSet.add(subTask);
 
     }
 
@@ -146,12 +148,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task removeTask(Integer taskId) {
         historyManager.remove(taskId);
+        taskSet.remove(getTask(taskId));
         return taskList.remove(taskId);
     }
 
     @Override
     public void removeAllTask() {
         clearAllTasksInHistory(taskList);
+        for(Task task : taskList.values()) taskSet.remove(task);
         taskList.clear();
     }
 
@@ -171,6 +175,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.updateEpic(); // обновляем статусы
         }
         clearAllTasksInHistory(subTaskList);
+        for(SubTask subtask : subTaskList.values()) taskSet.remove(subtask);
         subTaskList.clear();
     }
 
@@ -186,6 +191,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.updateEpic(); // обновляем статус эпика
 
         historyManager.remove(subTaskId);
+        taskSet.remove(getSubTask(subTaskId));
         return subTaskList.remove(subTaskId);
     }
 
@@ -248,5 +254,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    public Set<Task> getPrioritizedTasks() {
+        return taskSet;
     }
 }
