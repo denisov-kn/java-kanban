@@ -23,7 +23,7 @@ public class Task {
         return startTime;
     }
 
-    public Task(String summary, String description, Status status, Integer duration, LocalDateTime startTime) {
+    public Task(String summary, String description, Status status, Long duration, LocalDateTime startTime) {
         this.summary = summary;
         this.description = description;
         this.status = status;
@@ -37,7 +37,7 @@ public class Task {
         this.description = description;
         this.status = status;
         this.duration = Duration.ZERO;
-        this.startTime = null;
+        this.startTime = LocalDateTime.MIN;
 
     }
 
@@ -57,8 +57,8 @@ public class Task {
         this.summary = summary;
     }
 
-    public void setDuration(Duration duration) {
-        this.duration = duration;
+    public void setDuration(Long duration) {
+        this.duration = Duration.ofMinutes(duration);
     }
 
     public void setStartTime(LocalDateTime startTime) {

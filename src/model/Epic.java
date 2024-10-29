@@ -14,7 +14,7 @@ public class Epic extends Task {
     private LocalDateTime endTime;
 
     public Epic(String summary, String description) {
-        super(summary, description, Status.NEW, 0,LocalDateTime.MIN);
+        super(summary, description, Status.NEW, 0L,LocalDateTime.MIN);
         subTaskList = new ArrayList<>();
 
     }
@@ -83,7 +83,7 @@ public class Epic extends Task {
         }
 
         this.setStartTime(startDateTime);
-        this.setDuration(epicDuration);
+        this.setDuration(epicDuration.toMinutes());
         this.endTime = currentEndTime;
     }
 

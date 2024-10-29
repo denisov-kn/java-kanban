@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class SubTask extends Task {
         private Integer parentId;
 
-    public SubTask(String summary, String description, Status status, Integer parentId, Integer duration, LocalDateTime startTime) {
+    public SubTask(String summary, String description, Status status, Integer parentId, Long duration, LocalDateTime startTime) {
         super(summary, description, status, duration, startTime);
         this.parentId = parentId;
 
