@@ -3,6 +3,8 @@ package service;
 import model.*;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,17 +12,19 @@ import java.util.List;
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager  {
 
     File file;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
     }
 
 
+
     private void save() {
 
         try (Writer fileWriter = new FileWriter(file.getAbsolutePath())) {
 
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description, duration, startTime, epic\n");
 
             for (Task task: this.getTaskList()) {
                 fileWriter.write(toString(task) + "\n");
@@ -85,11 +89,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             type = Type.TASK;
         }
 
+
+
         String str =  task.getId() +
                 "," + type +
                 "," + task.getSummary() +
                 "," + task.getStatus() +
-                "," + task.getDescription() + ",";
+                "," + task.getDescription() +
+                "," + task.getDuration().toMinutes() +
+                "," + task.getStartTime().format(formatter) + ",";
         if (type.equals(Type.SUBTASK))
             str += ((SubTask) task).getParentId();
         return str;
@@ -111,7 +119,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
             SubTask subTask = new SubTask(strList[2],
                     strList[4],
                     Status.valueOf(strList[3]),
-                    Integer.parseInt(strList[5])
+                    Integer.parseInt(strList[7]),
+                    Integer.parseInt(strList[5]),
+                    LocalDateTime.parse(strList[6], formatter)
             );
 
             subTask.setId(Integer.parseInt(strList[0]));
@@ -119,7 +129,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
 
         } else {
 
-            Task task = new Task(strList[2], strList[4], Status.valueOf(strList[3]));
+            Task task = new Task(strList[2],
+                    strList[4],
+                    Status.valueOf(strList[3]),
+                    Integer.parseInt(strList[5]),
+                    LocalDateTime.parse(strList[6], formatter)
+            );
             task.setId(Integer.parseInt(strList[0]));
             return task;
 
