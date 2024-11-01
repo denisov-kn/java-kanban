@@ -53,16 +53,25 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task create(Task task) {
 
+        checkIntersect(task);
+
         int currentId = generateId();
         task.setId(currentId);
         taskList.put(currentId, task);
         taskSet.add(task);
-
         return task;
+    }
+
+    private void checkIntersect(Task task) {
+        if(taskSet.stream()
+                .anyMatch(task1 -> isIntersect(task1, task)))
+            throw new IllegalArgumentException ("Задача id: " +  task.getId() 
+                    + " пересекается с уже существующей по времени выполнения");
     }
 
     @Override
     public Epic create(Epic epic) {
+
         int currentId = generateId();
         epic.setId(currentId);
         epicList.put(currentId, epic);
@@ -73,6 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
     public SubTask create(SubTask subTask) {
 
 
+        checkIntersect(subTask);
         int currentId = generateId();
 
         Epic epic = epicList.get(subTask.getParentId());
@@ -89,9 +99,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
+        checkIntersect(task);
         Task taskCheck = taskList.get(task.getId());
         if (taskCheck == null) return;
         taskList.put(task.getId(),task);
+        taskSet.remove(taskCheck);
         taskSet.add(task);
     }
 
@@ -105,6 +117,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask) {
+
+        checkIntersect(subTask);
 
         SubTask currentSubTask = subTaskList.get(subTask.getId());
         if (currentSubTask == null) return;
@@ -120,6 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTaskToEpic(subTask); // добавляем сабтаску в список эпиков
         epic.updateEpic(); // обновляем статус эпика
         subTaskList.put(subTask.getId(),subTask);
+        taskSet.remove(currentSubTask);
         taskSet.add(subTask);
 
     }
@@ -258,5 +273,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     public Set<Task> getPrioritizedTasks() {
         return taskSet;
+    }
+
+
+    private boolean isIntersect(Task task1, Task task2) {
+
+        if(task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime())) return true;
+        else if(task2.getStartTime().isBefore(task1.getEndTime()) && task2.getEndTime().isAfter(task1.getStartTime())) return true;
+        else return false;
     }
 }

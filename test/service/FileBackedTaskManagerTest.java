@@ -150,14 +150,22 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
     @DisplayName("менеджер должен сохранять бекап")
     public void shouldSave() {
 
-        LocalDateTime dateTime = LocalDateTime.of(2024,1, 1, 0,0,0);
+        LocalDateTime dateTimeTask = LocalDateTime.of(2024,1, 1, 0,0,0);
+        LocalDateTime dateTimeSubTask = LocalDateTime.of(2024,2, 1, 0,0,0);
+
+
 
         fileBackedTaskManager = new FileBackedTaskManager(file);
-        Task task = new Task("Задача 1", "Описание 1", Status.NEW, 25L, dateTime);
+        Task task = new Task("Задача 1", "Описание 1", Status.NEW, 25L, dateTimeTask);
         task.setId(0);
         Epic epic = new Epic("Эпик 1", "Описание 2");
         epic.setId(1);
-        SubTask subTask = new SubTask("Сабтаск 1", "Описание 3", Status.DONE, 1, 10L, dateTime);
+        SubTask subTask = new SubTask("Сабтаск 1",
+                "Описание 3",
+                Status.DONE,
+                1,
+                10L,
+                dateTimeSubTask);
         subTask.setId(2);
 
         fileBackedTaskManager.create(task);
@@ -194,7 +202,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         Assertions.assertEquals("NEW", taskStr[3], "У задачи должен быть верный status");
         Assertions.assertEquals("Описание 1", taskStr[4], "У задачи должен быть верный description");
         Assertions.assertEquals(25, Long.parseLong(taskStr[5]), "У задачи должен быть верный duration");
-        Assertions.assertEquals(dateTime,
+        Assertions.assertEquals(dateTimeTask,
                 LocalDateTime.parse(taskStr[6],
                         DateFormat.DATE_TIME_FORMAT.getFormatter()),
                 "У задачи должен быть верный startTime");
@@ -208,7 +216,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         Assertions.assertEquals("DONE", epicStr[3], "У эпика должен быть верный status");
         Assertions.assertEquals("Описание 2", epicStr[4], "У эпика должен быть верный description");
         Assertions.assertEquals(10, Long.parseLong(epicStr[5]), "У эпика должен быть верный duration");
-        Assertions.assertEquals(dateTime,
+        Assertions.assertEquals(dateTimeSubTask,
                 LocalDateTime.parse(epicStr[6],
                         DateFormat.DATE_TIME_FORMAT.getFormatter()),
                 "У эпика должен быть верный startTime");
@@ -223,7 +231,7 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         Assertions.assertEquals("Описание 3", subTaskStr[4], "У сабтаска должен быть верный description");
         Assertions.assertEquals("1", subTaskStr[7], "У сабтаска должен быть верный epicId");
         Assertions.assertEquals(10, Long.parseLong(subTaskStr[5]), "У сабтаска должен быть верный duration");
-        Assertions.assertEquals(dateTime,
+        Assertions.assertEquals(dateTimeSubTask,
                 LocalDateTime.parse(subTaskStr[6],
                         DateFormat.DATE_TIME_FORMAT.getFormatter()),
                 "У сабтаска должен быть верный startTime");
