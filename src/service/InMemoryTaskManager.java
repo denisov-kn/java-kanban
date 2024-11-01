@@ -65,7 +65,7 @@ public class InMemoryTaskManager implements TaskManager {
     private void checkIntersect(Task task) {
         if(taskSet.stream()
                 .anyMatch(task1 -> isIntersect(task1, task)))
-            throw new IllegalArgumentException ("Задача id: " +  task.getId() 
+            throw new ValidationException ("Задача id: " +  task.getId()
                     + " пересекается с уже существующей по времени выполнения");
     }
 
