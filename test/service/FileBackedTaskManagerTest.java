@@ -153,8 +153,6 @@ class FileBackedTaskManagerTest extends InMemoryTaskManagerTest {
         LocalDateTime dateTimeTask = LocalDateTime.of(2024,1, 1, 0,0,0);
         LocalDateTime dateTimeSubTask = LocalDateTime.of(2024,2, 1, 0,0,0);
 
-
-
         fileBackedTaskManager = new FileBackedTaskManager(file);
         Task task = new Task("Задача 1", "Описание 1", Status.NEW, 25L, dateTimeTask);
         task.setId(0);
