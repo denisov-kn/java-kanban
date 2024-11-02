@@ -162,7 +162,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllTask() {
         clearAllTasksInHistory(taskList);
-        for(Task task : taskList.values()) taskSet.remove(task);
+        for (Task task : taskList.values()) taskSet.remove(task);
         taskList.clear();
     }
 
@@ -170,7 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeAllEpic() {
         clearAllTasksInHistory(subTaskList);
         clearAllTasksInHistory(epicList);
-        for(SubTask subTask : subTaskList.values()) taskSet.remove(subTask);
+        for (SubTask subTask : subTaskList.values()) taskSet.remove(subTask);
         subTaskList.clear();
         epicList.clear();
     }
@@ -183,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.updateEpic(); // обновляем статусы
         }
         clearAllTasksInHistory(subTaskList);
-        for(SubTask subtask : subTaskList.values()) taskSet.remove(subtask);
+        for (SubTask subtask : subTaskList.values()) taskSet.remove(subtask);
         subTaskList.clear();
     }
 
@@ -273,17 +273,17 @@ public class InMemoryTaskManager implements TaskManager {
     // метод поиска пересечения времени выполнения для двух задач
     private boolean isIntersect(Task task1, Task task2) {
 
-        if(task1.getStartTime().isBefore(task2.getEndTime())
+        if (task1.getStartTime().isBefore(task2.getEndTime())
                 && task1.getEndTime().isAfter(task2.getStartTime())) return true;
-        else if(task2.getStartTime().isBefore(task1.getEndTime())
+        else if (task2.getStartTime().isBefore(task1.getEndTime())
                 && task2.getEndTime().isAfter(task1.getStartTime())) return true;
         else return false;
     }
 
     private void checkIntersect(Task task) {
-        if(taskSet.stream()
+        if (taskSet.stream()
                 .anyMatch(task1 -> isIntersect(task1, task)))
-            throw new ValidationException ("Задача: " +  task
+            throw new ValidationException("Задача: " +  task
                     + " пересекается с уже существующей по времени выполнения");
     }
 }
