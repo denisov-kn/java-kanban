@@ -72,6 +72,7 @@ public class Epic extends Task {
         if (subTaskList.isEmpty()) {
             return;
         }
+
         LocalDateTime startDateTime = LocalDateTime.MAX;
         Duration epicDuration = Duration.ZERO;
         LocalDateTime currentEndTime = LocalDateTime.MIN;
