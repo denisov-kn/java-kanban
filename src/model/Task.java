@@ -32,7 +32,7 @@ public class Task {
 
     }
 
-    public Task (String summary, String description, Status status) {
+    public Task(String summary, String description, Status status) {
         this.summary = summary;
         this.description = description;
         this.status = status;
