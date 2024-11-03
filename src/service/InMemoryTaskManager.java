@@ -282,7 +282,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (task.getStartTime() == null) return;
         if (taskSet.stream()
-                .filter(currentTask -> currentTask.getId() == null || !currentTask.getId().equals(task.getId()) )
+                .filter(currentTask -> currentTask.getId() == null || !currentTask.getId().equals(task.getId()))
                 .anyMatch(task1 -> isIntersect(task1, task)))
             throw new ValidationException("Задача: " +  task
                     + " пересекается с уже существующей по времени выполнения");
