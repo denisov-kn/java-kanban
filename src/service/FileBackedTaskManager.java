@@ -96,8 +96,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager  {
                 "," + task.getStatus() +
                 "," + task.getDescription() +
                 "," + (task.getDuration() == null ? "null" : task.getDuration().toMinutes()) +
-                "," + (task.getStartTime() == null ? "null" : task.getStartTime().
-                format(DateFormat.DATE_TIME_FORMAT.getFormatter())) + ",";
+                "," + (task.getStartTime() == null ? "null" : task.getStartTime()
+                .format(DateFormat.DATE_TIME_FORMAT.getFormatter())) + ",";
         if (type.equals(Type.SUBTASK))
             str += ((SubTask) task).getParentId();
         return str;
