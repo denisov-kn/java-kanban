@@ -89,13 +89,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager  {
 
 
 
+
         String str =  task.getId() +
                 "," + type +
                 "," + task.getSummary() +
                 "," + task.getStatus() +
                 "," + task.getDescription() +
-                "," + task.getDuration().toMinutes() +
-                "," + task.getStartTime().format(DateFormat.DATE_TIME_FORMAT.getFormatter()) + ",";
+                "," + (task.getDuration() == null ? "null" : task.getDuration().toMinutes()) +
+                "," + (task.getStartTime() == null ? "null" : task.getStartTime().
+                format(DateFormat.DATE_TIME_FORMAT.getFormatter())) + ",";
         if (type.equals(Type.SUBTASK))
             str += ((SubTask) task).getParentId();
         return str;
@@ -110,8 +112,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager  {
             Epic epic = new Epic(strList[2], strList[4]);
            epic.setId(Integer.parseInt(strList[0]));
            epic.setStatus(Status.valueOf(strList[3]));
-           epic.setDuration(Long.parseLong(strList[5]));
-           epic.setStartTime(LocalDateTime.parse(strList[6], DateFormat.DATE_TIME_FORMAT.getFormatter())
+           epic.setDuration(strList[5].equals("null") ? null : Long.parseLong(strList[5]));
+           epic.setStartTime(strList[6].equals("null") ? null :
+                   LocalDateTime.parse(strList[6], DateFormat.DATE_TIME_FORMAT.getFormatter())
            );
 
            return epic;

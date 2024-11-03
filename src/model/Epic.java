@@ -15,8 +15,10 @@ public class Epic extends Task {
 
     public Epic(String summary, String description) {
         super(summary, description, Status.NEW, 0L,LocalDateTime.MIN);
+        this.setDuration(null);
+        this.setStartTime(null);
+        endTime = null;
         subTaskList = new ArrayList<>();
-
     }
 
     /* Обновляем расчетные поля эпика
@@ -70,6 +72,9 @@ public class Epic extends Task {
 
     private void updateTime() {
         if (subTaskList.isEmpty()) {
+            this.setDuration(null);
+            this.endTime = null;
+            this.setStartTime(null);
             return;
         }
 
@@ -77,15 +82,25 @@ public class Epic extends Task {
         Duration epicDuration = Duration.ZERO;
         LocalDateTime currentEndTime = LocalDateTime.MIN;
 
+
         for (SubTask subTask : subTaskList) {
-            if (subTask.getStartTime().isBefore(startDateTime)) startDateTime = subTask.getStartTime();
-            if (subTask.getEndTime().isAfter(currentEndTime)) currentEndTime = subTask.getEndTime();
-            epicDuration = epicDuration.plus(subTask.getDuration());
+
+            if (subTask.getStartTime()!=null) {
+                if (subTask.getStartTime().isBefore(startDateTime)) startDateTime = subTask.getStartTime();
+                if (subTask.getEndTime().isAfter(currentEndTime)) currentEndTime = subTask.getEndTime();
+                epicDuration = epicDuration.plus(subTask.getDuration());
+            }
         }
 
-        this.setStartTime(startDateTime);
-        this.setDuration(epicDuration.toMinutes());
-        this.endTime = currentEndTime;
+        //  Если внутри сабтасков были сабтаски с пустыми значениями
+        if (startDateTime != LocalDateTime.MAX) this.setStartTime(startDateTime);
+        else  this.setStartTime(null);
+
+        if (epicDuration != Duration.ZERO)  this.setDuration(epicDuration.toMinutes());
+        else this.setDuration(null);
+
+        if (currentEndTime != LocalDateTime.MIN) this.endTime = currentEndTime;
+        else this.endTime = null;
     }
 
 

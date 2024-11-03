@@ -57,7 +57,7 @@ public class InMemoryTaskManager implements TaskManager {
         int currentId = generateId();
         task.setId(currentId);
         taskList.put(currentId, task);
-        taskSet.add(task);
+        addToSortedTree(task);
         return task;
     }
 
@@ -84,7 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTaskToEpic(subTask);
         epic.updateEpic();
         subTaskList.put(currentId, subTask);
-        taskSet.add(subTask);
+        addToSortedTree(subTask);
 
         return subTask;
     }
@@ -92,11 +92,11 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         checkIntersect(task);
-        Task taskCheck = taskList.get(task.getId());
+        final Task taskCheck = taskList.get(task.getId());
         if (taskCheck == null) return;
         taskList.put(task.getId(),task);
         taskSet.remove(taskCheck);
-        taskSet.add(task);
+        addToSortedTree(task);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         checkIntersect(subTask);
 
-        SubTask currentSubTask = subTaskList.get(subTask.getId());
+        final SubTask currentSubTask = subTaskList.get(subTask.getId());
         if (currentSubTask == null) return;
 
         // проверяем что к нам пришел на обновление сабтаск, у которого верный parentId
@@ -127,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.updateEpic(); // обновляем статус эпика
         subTaskList.put(subTask.getId(),subTask);
         taskSet.remove(currentSubTask);
-        taskSet.add(subTask);
+        addToSortedTree(subTask);
 
     }
 
@@ -273,17 +273,22 @@ public class InMemoryTaskManager implements TaskManager {
     // метод поиска пересечения времени выполнения для двух задач
     private boolean isIntersect(Task task1, Task task2) {
 
-        if (task1.getStartTime().isBefore(task2.getEndTime())
-                && task1.getEndTime().isAfter(task2.getStartTime())) return true;
-        else if (task2.getStartTime().isBefore(task1.getEndTime())
-                && task2.getEndTime().isAfter(task1.getStartTime())) return true;
-        else return false;
+        return (task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime()));
+
+
     }
 
     private void checkIntersect(Task task) {
+
+        if (task.getStartTime() == null) return;
         if (taskSet.stream()
+                .filter(currentTask -> currentTask.getId() == null || !currentTask.getId().equals(task.getId()) )
                 .anyMatch(task1 -> isIntersect(task1, task)))
             throw new ValidationException("Задача: " +  task
                     + " пересекается с уже существующей по времени выполнения");
+    }
+
+    private void addToSortedTree(Task task) {
+        if (task.getStartTime() != null) taskSet.add(task);
     }
 }
