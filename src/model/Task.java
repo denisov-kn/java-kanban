@@ -74,6 +74,8 @@ public class Task {
     }
 
     public Integer getId() {
+        if (id == null) return -1;
+
         return id;
     }
 

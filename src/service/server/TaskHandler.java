@@ -10,7 +10,6 @@ import service.exception.NotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
 public class TaskHandler extends BaseHttpHandler implements HttpHandler {
@@ -23,7 +22,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        try (exchange) {
+        try {
             Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
             switch (endpoint) {
                 case POST_TASK:
@@ -45,7 +44,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             }
         } catch (InteractionException e) {
             e.printStackTrace();
-            sendText(exchange, HttpCode.INTERNAL_SERVER_ERROR.code, gson.toJson(new ErrorResponse(e.getMessage())));
+            sendText(exchange, HttpCode.NOT_ACCEPTABLE.code, gson.toJson(new ErrorResponse(e.getMessage())));
         } catch (NotFoundException e) {
             e.printStackTrace();
             sendText(exchange,HttpCode.NOT_FOUND.code, gson.toJson(new ErrorResponse(e.getMessage())));
@@ -54,7 +53,11 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             sendText(exchange, HttpCode.BAD_REQUEST.code, gson.toJson(new ErrorResponse(e.getMessage())));
         } catch (IOException e) {
             e.printStackTrace();
-            sendText(exchange, HttpCode.BAD_REQUEST.code, gson.toJson(new ErrorResponse("Внутренняя ошибка сервера")));
+            sendText(exchange, HttpCode.INTERNAL_SERVER_ERROR.code, gson.toJson(new ErrorResponse("Внутренняя ошибка сервера")));
+        }
+
+        finally {
+            exchange.close();
         }
 
     }
@@ -63,17 +66,12 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetTask(HttpExchange exchange) throws IOException {
 
         String path = exchange.getRequestURI().getPath();
-        int taskId = parseId(path.split("/")[1]);
-
+        int taskId = parseId(path.split("/")[2]);
         if (taskId == -1)
             throw new BadRequestException("Ошибка в id задачи, ожидается целое число. В запросе:" + path);
-        String taskSerialized ="";
-        try {
-            taskSerialized = gson.toJson(taskManager.getTask(taskId));
-        } catch (IndexOutOfBoundsException exception) {
+        if (taskManager.getTask(taskId) == null)
             throw new NotFoundException("Задача с id " + taskId + " не найдена");
-        }
-
+        String taskSerialized = gson.toJson(taskManager.getTask(taskId));
         sendText(exchange, HttpCode.OK.code, taskSerialized);
 
     }
@@ -88,8 +86,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private  void handlePostTask(HttpExchange exchange) throws IOException {
         InputStream requestBody = exchange.getRequestBody();
-        Task task = gson.fromJson(new InputStreamReader(requestBody), Task.class);
-        if(task.getId() > 0) {
+        String body =  new String(requestBody.readAllBytes());
+
+        Task task = gson.fromJson(body, Task.class);
+        if(task.getId() >= 0) {
             task = taskManager.updateTask(task);
             sendText(exchange, HttpCode.OK.code, gson.toJson(task));
         }
@@ -102,7 +102,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private void handleDeleteTask(HttpExchange exchange) throws IOException{
         String path = exchange.getRequestURI().getPath();
-        int taskId = parseId(path.split("/")[1]);
+        int taskId = parseId(path.split("/")[2]);
         if (taskId == -1) {
             throw new BadRequestException("Ошибка в id задачи, ожидается целое число. В запросе:" + path);
         }
@@ -120,11 +120,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
 
     private Endpoint getEndpoint (String requestPath, String requestMethod) {
-        String[] pathParts = requestPath.split("/");
 
         if(requestMethod.equals("POST"))  return  Endpoint.POST_TASK;
         else if(requestMethod.equals("DELETE")) return  Endpoint.DELETE_TASK;
-        else if(requestMethod.equals("GET") && pathParts.length == 1)  return Endpoint.GET_TASKS;
+        else if(requestMethod.equals("GET") && Pattern.matches("^/tasks$", requestPath))  return Endpoint.GET_TASKS;
         else if(requestMethod.equals("GET") && Pattern.matches("^/tasks/\\d+$", requestPath))
             return Endpoint.GET_TASK;
         return Endpoint.UNKNOWN;

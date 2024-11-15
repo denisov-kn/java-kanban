@@ -21,7 +21,12 @@ public class BaseHttpHandler {
     protected void sendText (HttpExchange exchange, Integer code, String text) throws IOException {
         byte[] response = text.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-        exchange.sendResponseHeaders(code, response.length);
+        try {
+            exchange.sendResponseHeaders(code, response.length);
+        } catch (IOException e) {
+            System.out.println("Ошибка!!!!");
+            e.printStackTrace();
+        }
         exchange.getResponseBody().write(response);
         exchange.close();
     }
