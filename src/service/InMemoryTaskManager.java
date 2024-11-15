@@ -3,6 +3,8 @@ package service;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import service.exception.InteractionException;
+import service.history.HistoryManager;
 
 import java.util.*;
 
@@ -16,7 +18,6 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, SubTask> subTaskList;
     private Integer id = 0;
     private final HistoryManager historyManager;
-
     private final Set<Task> taskSet;
 
 
@@ -90,13 +91,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public Task updateTask(Task task) {
         checkIntersect(task);
         final Task taskCheck = taskList.get(task.getId());
-        if (taskCheck == null) return;
+        if (taskCheck == null) return null;
         taskList.put(task.getId(),task);
         taskSet.remove(taskCheck);
         addToSortedTree(task);
+        return task;
     }
 
     @Override
@@ -266,6 +268,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
+    @Override
     public List<Task> getPrioritizedTasks() {
         return new ArrayList<>(taskSet);
     }
@@ -284,7 +287,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskSet.stream()
                 .filter(currentTask -> currentTask.getId() == null || !currentTask.getId().equals(task.getId()))
                 .anyMatch(task1 -> isIntersect(task1, task)))
-            throw new ValidationException("Задача: " +  task
+            throw new InteractionException("Задача: " +  task
                     + " пересекается с уже существующей по времени выполнения");
     }
 
