@@ -18,7 +18,6 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
 
         try (exchange) {
-
             String requestPath = exchange.getRequestURI().getPath();
             if (Pattern.matches("^/history$", requestPath) && exchange.getRequestMethod().equals("GET")) {
                 String historySerialized = gson.toJson(taskManager.getHistoryManager().getHistory());
