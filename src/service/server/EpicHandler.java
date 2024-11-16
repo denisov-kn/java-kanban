@@ -59,8 +59,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         } catch (IOException e) {
             e.printStackTrace();
             sendText(exchange, HttpCode.INTERNAL_SERVER_ERROR.code, gson.toJson(new ErrorResponse("Внутренняя ошибка сервера")));
-        }
-        finally {
+        } finally {
             exchange.close();
         }
 
@@ -94,11 +93,10 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         String body =  new String(requestBody.readAllBytes());
 
         Epic epic = gson.fromJson(body, Epic.class);
-        if(epic.getId() >= 0) {
+        if (epic.getId() >= 0) {
             epic = taskManager.updateEpic(epic);
             sendText(exchange, HttpCode.OK.code, gson.toJson(epic));
-        }
-        else {
+        } else {
             epic =  taskManager.create(epic);
             sendText(exchange, HttpCode.CREATE.code, gson.toJson(epic));
         }
@@ -108,9 +106,8 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteEpic(HttpExchange exchange) throws IOException{
         String path = exchange.getRequestURI().getPath();
         int epicId = parseId(path.split("/")[2]);
-        if (epicId == -1) {
+        if (epicId == -1)
             throw new BadRequestException("Ошибка в id эпика, ожидается целое число. В запросе:" + path);
-        }
 
         String epicSerialized = null;
         try {
@@ -123,7 +120,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         sendText(exchange,HttpCode.OK.code, epicSerialized);
     }
 
-    private void handleGetSubTasksOfEpic (HttpExchange exchange) throws IOException {
+    private void handleGetSubTasksOfEpic(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         int epicId = parseId(path.split("/")[2]);
         if (epicId == -1) {
@@ -143,15 +140,15 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
 
-    private Endpoint getEndpoint (String requestPath, String requestMethod) {
+    private Endpoint getEndpoint(String requestPath, String requestMethod) {
 
-        if(requestMethod.equals("POST"))  return  Endpoint.POST_EPIC;
+        if(requestMethod.equals("POST")) return  Endpoint.POST_EPIC;
         else if(requestMethod.equals("DELETE")) return  Endpoint.DELETE_EPIC;
         else if(requestMethod.equals("GET") && Pattern.matches("^/epics$", requestPath))  
             return Endpoint.GET_EPICS;
         else if(requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+$", requestPath)) 
             return Endpoint.GET_EPIC;
-        else if (requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+/subtasks$", requestPath)) {
+        else if(requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+/subtasks$", requestPath)) {
             return Endpoint.GET_SUBTASK_OF_EPIC;
         }
         return Endpoint.UNKNOWN;
