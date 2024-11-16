@@ -97,7 +97,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    private void handleDeleteTask(HttpExchange exchange) throws IOException{
+    private void handleDeleteTask(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         int taskId = parseId(path.split("/")[2]);
         if (taskId == -1)
@@ -114,7 +114,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     }
 
 
-    private Endpoint getEndpoint (String requestPath, String requestMethod) {
+    private Endpoint getEndpoint(String requestPath, String requestMethod) {
 
         if (requestMethod.equals("POST")) return Endpoint.POST_TASK;
         else if (requestMethod.equals("DELETE")) return Endpoint.DELETE_TASK;
