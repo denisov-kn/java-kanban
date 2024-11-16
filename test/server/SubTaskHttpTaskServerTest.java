@@ -20,7 +20,7 @@ class SubTaskHttpTaskServerTest extends BaseHttpTaskServerTest {
 
     @Test
     @DisplayName("должен получать список сабтасков")
-    public void shouldGetTasksList() throws IOException, InterruptedException {
+    public void shouldGetSubTasksList() throws IOException, InterruptedException {
 
         LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
         LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 1,0,0);
@@ -52,7 +52,7 @@ class SubTaskHttpTaskServerTest extends BaseHttpTaskServerTest {
 
     @Test
     @DisplayName("должен получать сабтаск")
-    public void shouldGetTask() throws IOException, InterruptedException {
+    public void shouldGetSubTask() throws IOException, InterruptedException {
 
         LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
         Epic epic = new Epic("Эпик 1", "Описание Эпика");
@@ -79,7 +79,7 @@ class SubTaskHttpTaskServerTest extends BaseHttpTaskServerTest {
 
     @Test
     @DisplayName("должен создавать сабтаск")
-    public void shouldCreateTask() throws IOException, InterruptedException {
+    public void shouldCreateSubTask() throws IOException, InterruptedException {
         LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
         Epic epic = new Epic("Эпик 1", "Описание Эпика");
         taskManager.create(epic);
@@ -103,7 +103,7 @@ class SubTaskHttpTaskServerTest extends BaseHttpTaskServerTest {
 
     @Test
     @DisplayName("должен обновлять сабтаск")
-    public void shouldUpdateTask() throws IOException, InterruptedException {
+    public void shouldUpdateSubTask() throws IOException, InterruptedException {
         LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
         LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 1,0,0);
         Epic epic = new Epic("Эпик 1", "Описание Эпика");
@@ -135,7 +135,7 @@ class SubTaskHttpTaskServerTest extends BaseHttpTaskServerTest {
 
     @Test
     @DisplayName("должен удалять сабтаск")
-    public void shouldDeleteTask() throws IOException, InterruptedException {
+    public void shouldDeleteSubTask() throws IOException, InterruptedException {
 
         LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
         LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 1,0,0);

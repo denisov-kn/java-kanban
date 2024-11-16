@@ -55,7 +55,6 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             e.printStackTrace();
             sendText(exchange, HttpCode.INTERNAL_SERVER_ERROR.code, gson.toJson(new ErrorResponse("Внутренняя ошибка сервера")));
         }
-
         finally {
             exchange.close();
         }

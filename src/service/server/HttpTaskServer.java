@@ -32,6 +32,7 @@ public class HttpTaskServer {
         httpServer.createContext("/history", new HistoryHandler(taskManager));
         httpServer.createContext("/prioritized", new PrioritizedHandler(taskManager));
         httpServer.createContext("/subtasks", new SubTaskHandler(taskManager));
+        httpServer.createContext("/epics", new EpicHandler(taskManager));
     }
 
     public static void main(String[] args) throws IOException {
