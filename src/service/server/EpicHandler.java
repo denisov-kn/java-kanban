@@ -103,7 +103,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
     }
 
-    private void handleDeleteEpic(HttpExchange exchange) throws IOException{
+    private void handleDeleteEpic(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         int epicId = parseId(path.split("/")[2]);
         if (epicId == -1)
@@ -142,15 +142,14 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
     private Endpoint getEndpoint(String requestPath, String requestMethod) {
 
-        if(requestMethod.equals("POST")) return  Endpoint.POST_EPIC;
-        else if(requestMethod.equals("DELETE")) return  Endpoint.DELETE_EPIC;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/epics$", requestPath))  
+        if(requestMethod.equals("POST")) return Endpoint.POST_EPIC;
+        else if(requestMethod.equals("DELETE")) return Endpoint.DELETE_EPIC;
+        else if(requestMethod.equals("GET") && Pattern.matches("^/epics$", requestPath))
             return Endpoint.GET_EPICS;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+$", requestPath)) 
+        else if(requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+$", requestPath))
             return Endpoint.GET_EPIC;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+/subtasks$", requestPath)) {
-            return Endpoint.GET_SUBTASK_OF_EPIC;
-        }
+        else if(requestMethod.equals("GET") && Pattern.matches("^/epics/\\d+/subtasks$", requestPath)) return Endpoint.GET_SUBTASK_OF_EPIC;
+
         return Endpoint.UNKNOWN;
     }
 
