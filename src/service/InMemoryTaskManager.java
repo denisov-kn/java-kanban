@@ -4,10 +4,7 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /* Класс который, занимается управлением задачами. Задачи складываются по типу - каждый в свою хешмапу.
 В параметрах есть Id - сквозной для всех задач (всех типов) */
@@ -20,14 +17,16 @@ public class InMemoryTaskManager implements TaskManager {
     private Integer id = 0;
     private final HistoryManager historyManager;
 
+    private final Set<Task> taskSet;
+
 
 
     public InMemoryTaskManager() {
         epicList = new HashMap<>();
         subTaskList = new HashMap<>();
         taskList = new HashMap<>();
+        taskSet = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         this.historyManager = Managers.getDefaultHistory();
-
     }
 
     @Override
@@ -54,19 +53,20 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task create(Task task) {
 
+        checkIntersect(task);
         int currentId = generateId();
         task.setId(currentId);
         taskList.put(currentId, task);
-
+        addToSortedTree(task);
         return task;
     }
 
     @Override
     public Epic create(Epic epic) {
+
         int currentId = generateId();
         epic.setId(currentId);
         epicList.put(currentId, epic);
-
         return epic;
     }
 
@@ -74,6 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
     public SubTask create(SubTask subTask) {
 
 
+        checkIntersect(subTask);
         int currentId = generateId();
 
         Epic epic = epicList.get(subTask.getParentId());
@@ -81,17 +82,21 @@ public class InMemoryTaskManager implements TaskManager {
 
         subTask.setId(currentId);
         epic.addSubTaskToEpic(subTask);
-        epic.updateStatus();
+        epic.updateEpic();
         subTaskList.put(currentId, subTask);
+        addToSortedTree(subTask);
 
         return subTask;
     }
 
     @Override
     public void updateTask(Task task) {
-        Task taskCheck = taskList.get(task.getId());
+        checkIntersect(task);
+        final Task taskCheck = taskList.get(task.getId());
         if (taskCheck == null) return;
         taskList.put(task.getId(),task);
+        taskSet.remove(taskCheck);
+        addToSortedTree(task);
     }
 
     @Override
@@ -105,7 +110,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubTask(SubTask subTask) {
 
-        SubTask currentSubTask = subTaskList.get(subTask.getId());
+        checkIntersect(subTask);
+
+        final SubTask currentSubTask = subTaskList.get(subTask.getId());
         if (currentSubTask == null) return;
 
         // проверяем что к нам пришел на обновление сабтаск, у которого верный parentId
@@ -117,8 +124,10 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epicList.get(currentParentId); //
         epic.removeSubTask(currentSubTask); // удаляем сабтаску из списка эпиков
         epic.addSubTaskToEpic(subTask); // добавляем сабтаску в список эпиков
-        epic.updateStatus(); // обновляем статус эпика
+        epic.updateEpic(); // обновляем статус эпика
         subTaskList.put(subTask.getId(),subTask);
+        taskSet.remove(currentSubTask);
+        addToSortedTree(subTask);
 
     }
 
@@ -146,12 +155,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task removeTask(Integer taskId) {
         historyManager.remove(taskId);
+        taskSet.remove(getTask(taskId));
         return taskList.remove(taskId);
     }
 
     @Override
     public void removeAllTask() {
         clearAllTasksInHistory(taskList);
+        for (Task task : taskList.values()) taskSet.remove(task);
         taskList.clear();
     }
 
@@ -159,6 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void removeAllEpic() {
         clearAllTasksInHistory(subTaskList);
         clearAllTasksInHistory(epicList);
+        for (SubTask subTask : subTaskList.values()) taskSet.remove(subTask);
         subTaskList.clear();
         epicList.clear();
     }
@@ -168,9 +180,10 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Epic epic : epicList.values()) {
             epic.removeSubTaskList();     // очищаем лист с подзадачами у эпиков
-            epic.updateStatus(); // обновляем статусы
+            epic.updateEpic(); // обновляем статусы
         }
         clearAllTasksInHistory(subTaskList);
+        for (SubTask subtask : subTaskList.values()) taskSet.remove(subtask);
         subTaskList.clear();
     }
 
@@ -183,9 +196,10 @@ public class InMemoryTaskManager implements TaskManager {
         Integer epicId = subTaskToDelete.getParentId();
         Epic epic = epicList.get(epicId);
         epic.removeSubTask(subTaskToDelete); // удаляем сабтаску из списка в эпике
-        epic.updateStatus(); // обновляем статус эпика
+        epic.updateEpic(); // обновляем статус эпика
 
         historyManager.remove(subTaskId);
+        taskSet.remove(getSubTask(subTaskId));
         return subTaskList.remove(subTaskId);
     }
 
@@ -199,8 +213,10 @@ public class InMemoryTaskManager implements TaskManager {
         List<SubTask> subTaskToRemove = epic.getSubTaskList();
         for (SubTask subTask : subTaskToRemove) {
             historyManager.remove(subTask.getId());
+            taskSet.remove(subTask);
             subTaskList.remove(subTask.getId());
         }
+
 
         historyManager.remove(epicId);
         return epicList.remove(epicId);
@@ -248,5 +264,31 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(taskSet);
+    }
+
+    // метод поиска пересечения времени выполнения для двух задач
+    private boolean isIntersect(Task task1, Task task2) {
+
+        return (task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime()));
+
+
+    }
+
+    private void checkIntersect(Task task) {
+
+        if (task.getStartTime() == null) return;
+        if (taskSet.stream()
+                .filter(currentTask -> currentTask.getId() == null || !currentTask.getId().equals(task.getId()))
+                .anyMatch(task1 -> isIntersect(task1, task)))
+            throw new ValidationException("Задача: " +  task
+                    + " пересекается с уже существующей по времени выполнения");
+    }
+
+    private void addToSortedTree(Task task) {
+        if (task.getStartTime() != null) taskSet.add(task);
     }
 }

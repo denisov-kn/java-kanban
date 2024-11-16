@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static utils.Equals.assertEqualsTask;
@@ -174,7 +175,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("должен удалять сабтаску")
-    public void shouldRemoveSubTask() {
+    public void shouldRemoveSubTask(){
         Epic epic = new Epic("Эпик 1", "Описание 2");
         inMemoryTaskManager.create(epic);
         SubTask subTask = new SubTask("Сабтаск 1", "Описание 1", Status.DONE, epic.getId());
@@ -189,7 +190,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("должен удалять все задачи")
-    public void shouldRemoveAllTask() {
+    public void shouldRemoveAllTask(){
         Task task1 = new Task("Задача 1", "Описание 1", Status.NEW);
         Task task2 = new Task("Задача 2", "Описание 2", Status.NEW);
         inMemoryTaskManager.create(task1);
@@ -204,7 +205,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("должен удалять все эпики")
-    public void shouldRemoveAllEpic() {
+    public void shouldRemoveAllEpic(){
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         Epic epic2 = new Epic("Эпик 2", "Описание 2");
         inMemoryTaskManager.create(epic1);
@@ -228,7 +229,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("должен удалять все сабтаски")
-    public void shouldRemoveAllSubTask() {
+    public void shouldRemoveAllSubTask(){
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         inMemoryTaskManager.create(epic1);
         SubTask subTask1 = new SubTask("Сабтаск 1", "Описание 1", Status.DONE, epic1.getId());
@@ -245,7 +246,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     @DisplayName("должен возвращать все сабтаски у эпика")
-    public void shouldGetSubTaskByEpicId () {
+    public void shouldGetSubTaskByEpicId(){
         Epic epic1 = new Epic("Эпик 1", "Описание 1");
         inMemoryTaskManager.create(epic1);
         SubTask subTask1 = new SubTask("Сабтаск 1", "Описание 1", Status.DONE, epic1.getId());
@@ -263,4 +264,189 @@ class InMemoryTaskManagerTest {
         assertEqualsTask(subTask2, subTaskList.get(1), "Должен возвращаться верный сабтаск");
         assertEqualsTask(subTask3, subTaskList.get(2), "Должен возвращаться верный сабтаск");
     }
+    @Test
+    @DisplayName("Должен добавлять задачи если время задач разнесено")
+    public void shouldCreateIfTimePeriodsOfTasksAreNotIntersect(){
+        LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
+        LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 1,0,0);
+        LocalDateTime dateTimeTask3 = LocalDateTime.of(2024,1, 1, 2,0,0);
+        Task task1 = new Task("Задача 1", "Описание 1", Status.NEW,60L, dateTimeTask1);
+        Task task2 = new Task("Задача 2", "Описание 2", Status.NEW,60L, dateTimeTask2);
+        Task task3 = new Task("Задача 3", "Описание 3", Status.NEW,60L, dateTimeTask3);
+
+        Assertions.assertDoesNotThrow(() -> {
+            inMemoryTaskManager.create(task1);
+            inMemoryTaskManager.create(task2);
+            inMemoryTaskManager.create(task3);
+        },"Все задачи должны добавляться менеджером");
+
+    }
+
+    @Test
+    @DisplayName("Не должен добавлять задачи если есть пересечение по времени у задач")
+    public void shouldNotCreateIfTimePeriodsOfTasksAreIntersect(){
+        LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 0,0,0);
+        LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 3,0,0);
+        LocalDateTime dateTimeTask3 = LocalDateTime.of(2024,1, 1, 4,0,0);
+        Task task1 = new Task("Задача 1", "Описание 1", Status.NEW,60L, dateTimeTask1);
+        Task task2 = new Task("Задача 2", "Описание 2", Status.NEW,61L, dateTimeTask2);
+        Task task3 = new Task("Задача 3", "Описание 3", Status.NEW,60L, dateTimeTask3);
+
+
+        inMemoryTaskManager.create(task1);
+        inMemoryTaskManager.create(task2);
+
+        Assertions.assertThrows(ValidationException.class,() -> {
+            inMemoryTaskManager.create(task3);
+        },"Задача 3 не должна добавляться, т.к имеет пересечение по левому краю");
+
+
+        dateTimeTask3 = LocalDateTime.of(2024,1, 1, 2,0,0);
+        task3.setDuration(61L);
+        task3.setStartTime(dateTimeTask3);
+        Assertions.assertThrows(ValidationException.class,() -> {
+            inMemoryTaskManager.create(task3);
+        },"Задача 3 не должна добавляться, т.к имеет пересечение по правому краю");
+
+    }
+
+    @Test
+    @DisplayName("менеджер должен возвращать задачи и сабтаски правильно приоритезированы " +
+            "по времени выполнения при создании новых и при их удалении")
+    public void shouldGetPrioritizedTasksIfCreateNew(){
+
+        LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 5,0,0);
+        LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 4,0,0);
+        LocalDateTime dateTimeTask3 = LocalDateTime.of(2024,1, 1, 2,0,0);
+        Task task1 = new Task("Задача 1", "Описание 1", Status.NEW,10L, dateTimeTask1);
+        Task task2 = new Task("Задача 2", "Описание 2", Status.NEW,5L, dateTimeTask2);
+        Task task3 = new Task("Задача 3", "Описание 3", Status.NEW,15L, dateTimeTask3);
+
+        Epic epic1 = new Epic("Эпик 1", "Описание 1");
+        inMemoryTaskManager.create(epic1);
+        Integer epic1Id = epic1.getId();
+
+        LocalDateTime dateTimeSubTask1 = LocalDateTime.of(2024,1, 1, 1,0,0);
+        LocalDateTime dateTimeSubTask2 = LocalDateTime.of(2024,1, 1, 3,0,0);
+        LocalDateTime dateTimeSubTask3 = LocalDateTime.of(2024,1, 1, 6,0,0);
+        SubTask subTask1 = new SubTask("Сабтаск 1",
+                "Описание 4",
+                Status.NEW,
+                epic1Id,
+                20L,
+                dateTimeSubTask1);
+        SubTask subTask2 = new SubTask("Сабтаск 2",
+                "Описание 5",
+                Status.NEW,
+                epic1Id,
+                30L,
+                dateTimeSubTask2);
+        SubTask subTask3 = new SubTask("Сабтаск 3",
+                "Описание 6",
+                Status.NEW,
+                epic1Id,
+                45L,
+                dateTimeSubTask3);
+
+        inMemoryTaskManager.create(task1);
+        inMemoryTaskManager.create(task2);
+        inMemoryTaskManager.create(task3);
+        inMemoryTaskManager.create(subTask1);
+        inMemoryTaskManager.create(subTask2);
+        inMemoryTaskManager.create(subTask3);
+        List<Task> prioritizedTasks = inMemoryTaskManager.getPrioritizedTasks();
+
+        Assertions.assertEquals(subTask1,prioritizedTasks.get(0), "Сабтаск1 должен быть на 1 месте");
+        Assertions.assertEquals(task3, prioritizedTasks.get(1), "Задача3 должна быть на 2 месте");
+        Assertions.assertEquals(subTask2, prioritizedTasks.get(2), "Сабтаск2 должен быть на 3 месте");
+        Assertions.assertEquals(task2, prioritizedTasks.get(3), "Задача2 должна быть на 4 месте");
+        Assertions.assertEquals(task1, prioritizedTasks.get(4), "Задача1 должна быть на 5 месте");
+        Assertions.assertEquals(subTask3, prioritizedTasks.get(5), "Сабтаск3 должен быть на 6 месте");
+
+
+        inMemoryTaskManager.removeTask(task1.getId());
+        inMemoryTaskManager.removeSubTask(subTask1.getId());
+        prioritizedTasks = inMemoryTaskManager.getPrioritizedTasks();
+
+        Assertions.assertEquals(task3, prioritizedTasks.get(0), "Задача3 должна быть на 1 месте");
+        Assertions.assertEquals(subTask2, prioritizedTasks.get(1), "Сабтаск2 должен быть на 2 месте");
+        Assertions.assertEquals(task2, prioritizedTasks.get(2), "Задача2 должна быть на 3 месте");
+        Assertions.assertEquals(subTask3, prioritizedTasks.get(3), "Сабтаск3 должен быть на 4 месте");
+        Assertions.assertEquals(4, prioritizedTasks.size(), "В списке задач должно остаться 4 элемента");
+
+        inMemoryTaskManager.removeEpic(epic1.getId());
+        prioritizedTasks = inMemoryTaskManager.getPrioritizedTasks();
+
+        Assertions.assertEquals(task3, prioritizedTasks.get(0), "Задача3 должна быть на 1 месте");
+        Assertions.assertEquals(task2, prioritizedTasks.get(1), "Задача2 должна быть на 2 месте");
+        Assertions.assertEquals(2, prioritizedTasks.size(), "В списке задач должно остаться 2 элемента");
+
+        inMemoryTaskManager.removeAllTask();
+        prioritizedTasks = inMemoryTaskManager.getPrioritizedTasks();
+        Assertions.assertEquals(0, prioritizedTasks.size(), "В списке не должно быть задач");
+    }
+
+
+    @Test
+    @DisplayName("менеджер должен возвращать задачи и сабтаски правильно приоритезированы при их обновлении")
+    public void shouldGetPrioritizedTasksIfUpdate(){
+
+        LocalDateTime dateTimeTask1 = LocalDateTime.of(2024,1, 1, 5,0,0);
+        LocalDateTime dateTimeTask2 = LocalDateTime.of(2024,1, 1, 1,0,0);
+        Task task1 = new Task("Задача 1", "Описание 1", Status.NEW,10L, dateTimeTask1);
+        Task task2 = new Task("Задача 2", "Описание 2", Status.NEW,5L, dateTimeTask2);
+
+        Epic epic1 = new Epic("Эпик 1", "Описание 1");
+        inMemoryTaskManager.create(epic1);
+        Integer epic1Id = epic1.getId();
+
+        LocalDateTime dateTimeSubTask1 = LocalDateTime.of(2024,1, 1,4 ,0,0);
+        LocalDateTime dateTimeSubTask2 = LocalDateTime.of(2024,1, 1, 3,0,0);
+        SubTask subTask1 = new SubTask("Сабтаск 1",
+                "Описание 4",
+                Status.NEW,
+                epic1Id,
+                20L,
+                dateTimeSubTask1);
+        SubTask subTask2 = new SubTask("Сабтаск 2",
+                "Описание 5",
+                Status.NEW,
+                epic1Id,
+                30L,
+                dateTimeSubTask2);
+
+        inMemoryTaskManager.create(task1);
+        inMemoryTaskManager.create(task2);
+        inMemoryTaskManager.create(subTask1);
+        inMemoryTaskManager.create(subTask2);
+
+        dateTimeTask2 = LocalDateTime.of(2024,1, 1, 4,0,0);
+        dateTimeSubTask1 = LocalDateTime.of(2024,1, 1, 2,0,0);
+
+        SubTask subTask1New = new SubTask("Сабтаск 1 - new",
+                "Описание 4 new",
+                Status.NEW,
+                epic1Id,
+                20L,
+                dateTimeSubTask1);
+        subTask1New.setId(subTask1.getId());
+        inMemoryTaskManager.updateSubTask(subTask1New);
+
+        Task task2New = new Task("Задача 2 - new",
+                "Описание 2 new",
+                Status.NEW,
+                10L,
+                dateTimeTask2);
+        task2New.setId(task2.getId());
+        inMemoryTaskManager.updateTask(task2New);
+
+        List<Task> prioritizedTasks = inMemoryTaskManager.getPrioritizedTasks();
+
+        Assertions.assertEquals(subTask1,prioritizedTasks.get(0), "Сабтаск1 должен быть на 1 месте");
+        Assertions.assertEquals(subTask2, prioritizedTasks.get(1), "Сабтаск2 должен быть на 2 месте");
+        Assertions.assertEquals(task2, prioritizedTasks.get(2), "Задача2 должна быть на 3 месте");
+        Assertions.assertEquals(task1, prioritizedTasks.get(3), "Задача1 должна быть на 4 месте");
+
+    }
+
 }
