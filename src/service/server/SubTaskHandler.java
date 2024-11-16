@@ -123,10 +123,10 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private Endpoint getEndpoint (String requestPath, String requestMethod) {
 
-        if(requestMethod.equals("POST"))  return  Endpoint.POST_SUB_TASK;
-        else if(requestMethod.equals("DELETE")) return  Endpoint.DELETE_SUB_TASK;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/subtasks$", requestPath))  return Endpoint.GET_SUB_TASKS;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/subtasks/\\d+$", requestPath))
+        if (requestMethod.equals("POST")) return  Endpoint.POST_SUB_TASK;
+        else if (requestMethod.equals("DELETE")) return  Endpoint.DELETE_SUB_TASK;
+        else if (requestMethod.equals("GET") && Pattern.matches("^/subtasks$", requestPath)) return Endpoint.GET_SUB_TASKS;
+        else if (requestMethod.equals("GET") && Pattern.matches("^/subtasks/\\d+$", requestPath))
             return Endpoint.GET_SUB_TASK;
         return Endpoint.UNKNOWN;
     }

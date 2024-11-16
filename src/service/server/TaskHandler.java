@@ -120,10 +120,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
 
     private Endpoint getEndpoint (String requestPath, String requestMethod) {
 
-        if(requestMethod.equals("POST"))  return  Endpoint.POST_TASK;
-        else if(requestMethod.equals("DELETE")) return  Endpoint.DELETE_TASK;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/tasks$", requestPath))  return Endpoint.GET_TASKS;
-        else if(requestMethod.equals("GET") && Pattern.matches("^/tasks/\\d+$", requestPath))
+        if (requestMethod.equals("POST")) return Endpoint.POST_TASK;
+        else if (requestMethod.equals("DELETE")) return Endpoint.DELETE_TASK;
+        else if (requestMethod.equals("GET") && Pattern.matches("^/tasks$", requestPath)) return Endpoint.GET_TASKS;
+        else if (requestMethod.equals("GET") && Pattern.matches("^/tasks/\\d+$", requestPath))
             return Endpoint.GET_TASK;
         return Endpoint.UNKNOWN;
     }
