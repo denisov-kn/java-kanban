@@ -54,8 +54,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         } catch (IOException e) {
             e.printStackTrace();
             sendText(exchange, HttpCode.INTERNAL_SERVER_ERROR.code, gson.toJson(new ErrorResponse("Внутренняя ошибка сервера")));
-        }
-        finally {
+        } finally {
             exchange.close();
         }
 
@@ -88,11 +87,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         String body =  new String(requestBody.readAllBytes());
 
         Task task = gson.fromJson(body, Task.class);
-        if(task.getId() >= 0) {
+        if (task.getId() >= 0) {
             task = taskManager.updateTask(task);
             sendText(exchange, HttpCode.OK.code, gson.toJson(task));
-        }
-        else {
+        } else {
             task =  taskManager.create(task);
             sendText(exchange, HttpCode.CREATE.code, gson.toJson(task));
         }
@@ -102,10 +100,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteTask(HttpExchange exchange) throws IOException{
         String path = exchange.getRequestURI().getPath();
         int taskId = parseId(path.split("/")[2]);
-        if (taskId == -1) {
+        if (taskId == -1)
             throw new BadRequestException("Ошибка в id задачи, ожидается целое число. В запросе:" + path);
-        }
-
         String taskSerialized = null;
         try {
             taskSerialized = gson.toJson(taskManager.getTask(taskId));
