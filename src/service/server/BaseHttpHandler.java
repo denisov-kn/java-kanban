@@ -18,7 +18,7 @@ public class BaseHttpHandler {
         this.gson = Managers.getGson();
     }
 
-    protected void sendText (HttpExchange exchange, Integer code, String text) throws IOException {
+    protected void sendText(HttpExchange exchange, Integer code, String text) throws IOException {
         byte[] response = text.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
         exchange.sendResponseHeaders(code, response.length);
@@ -29,7 +29,7 @@ public class BaseHttpHandler {
     protected Integer parseId(String id) {
         try {
             return Integer.parseInt(id);
-        } catch(NumberFormatException exception) {
+        } catch (NumberFormatException exception) {
            return -1;
         }
     }
