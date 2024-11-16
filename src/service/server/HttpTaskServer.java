@@ -1,19 +1,17 @@
 package service.server;
 
-import com.google.gson.Gson;
+
 import com.sun.net.httpserver.HttpServer;
 import service.Managers;
 import service.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
 public class HttpTaskServer {
 
     protected TaskManager taskManager;
     public static final int PORT = 8080;
     private HttpServer httpServer;
-    private Gson gson;
 
     public TaskManager getTaskManager() {
         return taskManager;
@@ -22,7 +20,6 @@ public class HttpTaskServer {
 
     public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
-        gson = Managers.getGson();
         try {
             httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
         } catch (IOException e) {

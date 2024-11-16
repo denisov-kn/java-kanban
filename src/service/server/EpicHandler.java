@@ -165,6 +165,4 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         DELETE_EPIC,
         UNKNOWN
     }
-
-
 }
