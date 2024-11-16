@@ -57,9 +57,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
             sendText(exchange, HttpCode.INTERNAL_SERVER_ERROR.code,
                     gson.toJson(new ErrorResponse("Внутренняя ошибка сервера"))
             );
-        }
-
-        finally {
+        } finally {
             exchange.close();
         }
 
@@ -69,12 +67,12 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handleGetSubTask(HttpExchange exchange) throws IOException {
 
         String path = exchange.getRequestURI().getPath();
-        int SubTaskId = parseId(path.split("/")[2]);
-        if (SubTaskId == -1)
+        int subTaskId = parseId(path.split("/")[2]);
+        if (subTaskId == -1)
             throw new BadRequestException("Ошибка в id сабтаска, ожидается целое число. В запросе:" + path);
-        if (taskManager.getSubTask(SubTaskId) == null)
-            throw new NotFoundException("Сабтаск с id " + SubTaskId + " не найдена");
-        String subTaskSerialized = gson.toJson(taskManager.getSubTask(SubTaskId));
+        if (taskManager.getSubTask(subTaskId) == null)
+            throw new NotFoundException("Сабтаск с id " + subTaskId + " не найдена");
+        String subTaskSerialized = gson.toJson(taskManager.getSubTask(subTaskId));
         sendText(exchange, HttpCode.OK.code, subTaskSerialized);
     }
 
@@ -91,18 +89,17 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         String body =  new String(requestBody.readAllBytes());
 
         SubTask subTask = gson.fromJson(body, SubTask.class);
-        if(subTask.getId() >= 0) {
+        if (subTask.getId() >= 0) {
             subTask = taskManager.updateSubTask(subTask);
             sendText(exchange, HttpCode.OK.code, gson.toJson(subTask));
-        }
-        else {
+        } else {
             subTask =  taskManager.create(subTask);
             sendText(exchange, HttpCode.CREATE.code, gson.toJson(subTask));
         }
 
     }
 
-    private void handleDeleteSubTask(HttpExchange exchange) throws IOException{
+    private void handleDeleteSubTask(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
         int subTaskId = parseId(path.split("/")[2]);
         if (subTaskId == -1) {
@@ -121,7 +118,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
     }
 
 
-    private Endpoint getEndpoint (String requestPath, String requestMethod) {
+    private Endpoint getEndpoint(String requestPath, String requestMethod) {
 
         if (requestMethod.equals("POST")) return  Endpoint.POST_SUB_TASK;
         else if (requestMethod.equals("DELETE")) return  Endpoint.DELETE_SUB_TASK;
