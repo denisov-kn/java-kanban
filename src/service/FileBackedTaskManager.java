@@ -1,6 +1,7 @@
 package service;
 
 import model.*;
+import service.exception.ManagerSaveException;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -164,28 +165,30 @@ public class FileBackedTaskManager extends InMemoryTaskManager  {
 
     @Override
     public Task create(Task task) {
-
         Task task1 = super.create(task);
         save();
-        return  task1;
+        return task1;
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        super.updateEpic(epic);
+    public Epic updateEpic(Epic epic) {
+        Epic epic1 = super.updateEpic(epic);
         save();
+        return epic1;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
-        super.updateSubTask(subTask);
+    public SubTask updateSubTask(SubTask subTask) {
+        SubTask subTask1 = super.updateSubTask(subTask);
         save();
+        return subTask;
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
+    public Task updateTask(Task task) {
+        Task task1 = super.updateTask(task);
         save();
+        return task1;
     }
 
     @Override

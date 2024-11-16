@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import service.exception.InteractionException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -296,7 +297,7 @@ class InMemoryTaskManagerTest {
         inMemoryTaskManager.create(task1);
         inMemoryTaskManager.create(task2);
 
-        Assertions.assertThrows(ValidationException.class,() -> {
+        Assertions.assertThrows(InteractionException.class,() -> {
             inMemoryTaskManager.create(task3);
         },"Задача 3 не должна добавляться, т.к имеет пересечение по левому краю");
 
@@ -304,7 +305,7 @@ class InMemoryTaskManagerTest {
         dateTimeTask3 = LocalDateTime.of(2024,1, 1, 2,0,0);
         task3.setDuration(61L);
         task3.setStartTime(dateTimeTask3);
-        Assertions.assertThrows(ValidationException.class,() -> {
+        Assertions.assertThrows(InteractionException.class,() -> {
             inMemoryTaskManager.create(task3);
         },"Задача 3 не должна добавляться, т.к имеет пересечение по правому краю");
 
